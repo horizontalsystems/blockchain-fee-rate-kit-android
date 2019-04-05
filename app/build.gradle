@@ -1,13 +1,11 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "io.horizontalsystems.feeratekit"
+        applicationId "io.horizontalsystems.feeratekit.demo"
         minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
