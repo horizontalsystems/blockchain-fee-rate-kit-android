@@ -21,9 +21,9 @@ class IpfsFeeRate {
                     rates.add(
                         FeeRate(
                             coin,
-                            rateObject["low_priority"].asInt(),
-                            rateObject["medium_priority"].asInt(),
-                            rateObject["high_priority"].asInt(),
+                            rateObject["low_priority"].asLong(),
+                            rateObject["medium_priority"].asLong(),
+                            rateObject["high_priority"].asLong(),
                             jsonObject["time"].asLong()
                         )
                     )

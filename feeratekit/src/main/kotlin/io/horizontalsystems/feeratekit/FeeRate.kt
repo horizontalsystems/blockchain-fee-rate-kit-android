@@ -11,9 +11,9 @@ import io.horizontalsystems.feeratekit.storage.EnumConverter
 data class FeeRate(
     @PrimaryKey
     val coin: Coin,
-    val lowPriority: Int,
-    val mediumPriority: Int,
-    val highPriority: Int,
+    val lowPriority: Long,
+    val mediumPriority: Long,
+    val highPriority: Long,
     val date: Long
 )
 
@@ -40,9 +40,9 @@ enum class Coin(val code: String) {
             )
             ETHEREUM -> FeeRate(
                 coin = this,
-                lowPriority = 13,
-                mediumPriority = 16,
-                highPriority = 19,
+                lowPriority = 13_000_000_000,
+                mediumPriority = 16_000_000_000,
+                highPriority = 19_000_000_000,
                 date = 1543211299
             )
         }
