@@ -1,6 +1,6 @@
 package io.horizontalsystems.feeratekit.storage
 
-import androidx.room.*
+import android.arch.persistence.room.*
 import io.horizontalsystems.feeratekit.FeeRate
 
 @Dao
