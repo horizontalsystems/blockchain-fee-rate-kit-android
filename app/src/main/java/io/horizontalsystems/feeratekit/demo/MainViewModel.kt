@@ -1,7 +1,7 @@
 package io.horizontalsystems.feeratekit.demo
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.ViewModel
 import io.horizontalsystems.feeratekit.FeeRate
 import io.horizontalsystems.feeratekit.FeeRateKit
 

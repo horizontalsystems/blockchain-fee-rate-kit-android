@@ -1,6 +1,6 @@
 package io.horizontalsystems.feeratekit.storage
 
-import androidx.room.TypeConverter
+import android.arch.persistence.room.TypeConverter
 import io.horizontalsystems.feeratekit.Coin
 
 class EnumConverter {
@@ -11,6 +11,6 @@ class EnumConverter {
 
     @TypeConverter
     fun toCoin(code: String): Coin {
-        return Coin.valueOf(code)
+        return Coin.values().first { it.code == code }
     }
 }
