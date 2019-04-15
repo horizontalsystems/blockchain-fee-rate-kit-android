@@ -11,6 +11,6 @@ class EnumConverter {
 
     @TypeConverter
     fun toCoin(code: String): Coin {
-        return Coin.valueOf(code)
+        return Coin.values().first { it.code == code }
     }
 }
