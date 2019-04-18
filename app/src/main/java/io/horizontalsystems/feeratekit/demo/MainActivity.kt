@@ -1,11 +1,11 @@
 package io.horizontalsystems.feeratekit.demo
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 
 
 class MainActivity : AppCompatActivity() {
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         ratesRefresh = findViewById(R.id.refreshButton)
 
         viewModel.rates.observe(this, Observer { rates ->
-            ratesTextView.text = rates?.joinToString("\n\n") { rate ->
+            ratesTextView.text = rates.joinToString("\n\n") { rate ->
                 "Coin: ${rate.coin.code}\n" +
                 "Low: ${rate.lowPriority}\n" +
                 "Medium: ${rate.mediumPriority}\n" +

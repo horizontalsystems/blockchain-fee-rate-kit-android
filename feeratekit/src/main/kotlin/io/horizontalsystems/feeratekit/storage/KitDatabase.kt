@@ -1,7 +1,8 @@
 package io.horizontalsystems.feeratekit.storage
 
-import android.arch.persistence.room.Database
-import android.arch.persistence.room.RoomDatabase
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import io.horizontalsystems.feeratekit.FeeRate
 
 @Database(

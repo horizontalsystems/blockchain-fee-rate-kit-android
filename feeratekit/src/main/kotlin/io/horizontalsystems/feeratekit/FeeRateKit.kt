@@ -1,7 +1,7 @@
 package io.horizontalsystems.feeratekit
 
-import android.arch.persistence.room.Room
 import android.content.Context
+import androidx.room.Room
 import io.horizontalsystems.feeratekit.api.IpfsFeeRate
 import io.horizontalsystems.feeratekit.storage.KitDatabase
 import io.horizontalsystems.feeratekit.storage.Storage
