@@ -31,6 +31,10 @@ class FeeRateKit(private val context: Context, var listener: Listener? = null) :
         return getRate(Coin.BITCOIN_CASH)
     }
 
+    fun dash(): FeeRate {
+        return getRate(Coin.DASH)
+    }
+
     fun ethereum(): FeeRate {
         return getRate(Coin.ETHEREUM)
     }

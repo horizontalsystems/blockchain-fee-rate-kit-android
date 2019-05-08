@@ -20,6 +20,7 @@ data class FeeRate(
 enum class Coin(val code: String) {
     BITCOIN("BTC"),
     BITCOIN_CASH("BCH"),
+    DASH("DASH"),
     ETHEREUM("ETH");
 
     fun defaultRate(): FeeRate {
@@ -37,6 +38,13 @@ enum class Coin(val code: String) {
                 mediumPriority = 3,
                 highPriority = 5,
                 date = 1543211299
+            )
+            DASH -> FeeRate(
+                    coin = this,
+                    lowPriority = 1,
+                    mediumPriority = 1,
+                    highPriority = 2,
+                    date = 1557224133
             )
             ETHEREUM -> FeeRate(
                 coin = this,

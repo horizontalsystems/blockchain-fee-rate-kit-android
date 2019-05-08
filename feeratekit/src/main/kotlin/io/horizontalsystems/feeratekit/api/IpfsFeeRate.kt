@@ -5,7 +5,7 @@ import io.horizontalsystems.feeratekit.FeeRate
 import io.reactivex.Maybe
 
 class IpfsFeeRate {
-    private val apiManager = ApiManager("https://ipfs.io")
+    private val apiManager = ApiManager("https://ipfs-ext.horizontalsystems.xyz") // https://ipfs.io
 
     fun getFeeRate(): Maybe<List<FeeRate>> {
         return Maybe.create { subscriber ->
@@ -16,8 +16,9 @@ class IpfsFeeRate {
                 val ratesObject = jsonObject.get("rates").asObject()
                 val rates = mutableListOf<FeeRate>()
 
-                Coin.values().forEach { coin ->
-                    val rateObject = ratesObject.get(coin.code).asObject()
+                for (coin in Coin.values()) {
+                    val rateForCoin = ratesObject.get(coin.code) ?: continue
+                    val rateObject = rateForCoin.asObject()
                     rates.add(
                         FeeRate(
                             coin,
