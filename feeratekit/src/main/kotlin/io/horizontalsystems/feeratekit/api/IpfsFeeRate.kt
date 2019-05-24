@@ -5,13 +5,14 @@ import io.horizontalsystems.feeratekit.FeeRate
 import io.reactivex.Maybe
 
 class IpfsFeeRate {
-    private val apiManager = ApiManager("https://ipfs-ext.horizontalsystems.xyz") // https://ipfs.io
 
-    fun getFeeRate(): Maybe<List<FeeRate>> {
+    fun getFeeRate(url: String, timeoutInSeconds: Int = 60): Maybe<List<FeeRate>> {
         return Maybe.create { subscriber ->
             try {
+                val apiManager = ApiManager("https://$url")
+
                 val jsonObject =
-                    apiManager.getJson("ipns/QmXTJZBMMRmBbPun6HFt3tmb3tfYF2usLPxFoacL7G5uMX/blockchain/estimatefee/index.json")
+                    apiManager.getJson("ipns/QmXTJZBMMRmBbPun6HFt3tmb3tfYF2usLPxFoacL7G5uMX/blockchain/estimatefee/index.json", timeoutInSeconds)
 
                 val ratesObject = jsonObject.get("rates").asObject()
                 val rates = mutableListOf<FeeRate>()
@@ -36,5 +37,10 @@ class IpfsFeeRate {
                 subscriber.onError(e)
             }
         }
+    }
+
+    companion object {
+        const val mainUrl = "ipfs-ext.horizontalsystems.xyz"
+        const val fallbackUrl = "ipfs.io"
     }
 }
