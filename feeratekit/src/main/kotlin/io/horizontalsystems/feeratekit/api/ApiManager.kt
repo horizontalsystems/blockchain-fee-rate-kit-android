@@ -10,11 +10,11 @@ class ApiManager(private val host: String) {
     private val logger = Logger.getLogger("ApiManager")
 
     @Throws
-    fun getJson(file: String): JsonObject {
-        return getJsonValue(file).asObject()
+    fun getJson(file: String, timeoutInSeconds: Int): JsonObject {
+        return getJsonValue(file, timeoutInSeconds).asObject()
     }
 
-    private fun getJsonValue(file: String): JsonValue {
+    private fun getJsonValue(file: String, timeoutInSeconds: Int): JsonValue {
         val resource = "$host/$file"
 
         logger.info("Fetching $resource")
@@ -23,7 +23,7 @@ class ApiManager(private val host: String) {
             .openConnection()
             .apply {
                 connectTimeout = 5000
-                readTimeout = 60000
+                readTimeout = timeoutInSeconds * 1000
                 setRequestProperty("Accept", "application/json")
             }
             .getInputStream()

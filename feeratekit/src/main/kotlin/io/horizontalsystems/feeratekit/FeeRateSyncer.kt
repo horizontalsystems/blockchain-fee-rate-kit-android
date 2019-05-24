@@ -1,7 +1,6 @@
 package io.horizontalsystems.feeratekit
 
 import io.horizontalsystems.feeratekit.api.IpfsFeeRate
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -37,13 +36,15 @@ class FeeRateSyncer(
     }
 
     private fun syncFeeRate() {
-        ipfsFeeRate.getFeeRate()
-            .onErrorResumeNext(Maybe.empty())
+        ipfsFeeRate.getFeeRate(IpfsFeeRate.mainUrl, 20)
+            .onErrorResumeNext(ipfsFeeRate.getFeeRate(IpfsFeeRate.fallbackUrl,60))
             .subscribeOn(Schedulers.io())
-            .subscribe { rates ->
+            .subscribe({ rates ->
                 storage.setFeeRates(rates)
                 listener.onUpdate(rates)
-            }
+            }, {
+                // error happened
+            })
             .also {
                 disposables.add(it)
             }
