@@ -19,10 +19,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
+
+    buildToolsVersion '28.0.3'
 }
 
 dependencies {
@@ -40,6 +44,9 @@ dependencies {
 
     //  JSON
     implementation 'com.eclipsesource.minimal-json:minimal-json:0.9.5'
+
+    //Infura
+    implementation 'org.web3j:core:4.1.0-android'
 
     //  Test helpers
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.1'
