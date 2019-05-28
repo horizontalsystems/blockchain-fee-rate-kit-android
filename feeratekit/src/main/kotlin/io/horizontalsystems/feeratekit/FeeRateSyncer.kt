@@ -1,6 +1,6 @@
 package io.horizontalsystems.feeratekit
 
-import io.horizontalsystems.feeratekit.api.IpfsFeeRate
+import io.horizontalsystems.feeratekit.api.FeeRatesProvider
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 
 class FeeRateSyncer(
     private val storage: IStorage,
-    private val ipfsFeeRate: IpfsFeeRate,
+    private val feeRatesProvider: FeeRatesProvider,
     private val listener: Listener
 ) {
 
@@ -36,14 +36,44 @@ class FeeRateSyncer(
     }
 
     private fun syncFeeRate() {
-        ipfsFeeRate.getFeeRate(IpfsFeeRate.mainUrl, 20)
-            .onErrorResumeNext(ipfsFeeRate.getFeeRate(IpfsFeeRate.fallbackUrl,60))
+        feeRatesProvider.getFeeRatesFromIpfs(FeeRatesProvider.mainUrl, 20)
+            .onErrorResumeNext(feeRatesProvider.getFeeRatesFromIpfs(FeeRatesProvider.fallbackUrl, 40))
             .subscribeOn(Schedulers.io())
             .subscribe({ rates ->
                 storage.setFeeRates(rates)
                 listener.onUpdate(rates)
             }, {
-                // error happened
+                //on error try fetching fees from alternative sources
+                getGasPriceFromInfura()
+                getBitcoinFeeRateFromBCoin()
+            })
+            .also {
+                disposables.add(it)
+            }
+    }
+
+    private fun getBitcoinFeeRateFromBCoin() {
+        feeRatesProvider.getFeeRatesFromBCoin()
+            .subscribeOn(Schedulers.io())
+            .subscribe({ rate ->
+                storage.setFeeRates(listOf(rate))
+                listener.onUpdate(listOf(rate))
+            }, {
+
+            })
+            .also {
+                disposables.add(it)
+            }
+    }
+
+    private fun getGasPriceFromInfura() {
+        feeRatesProvider.getGasPriceFromInfura()
+            .subscribeOn(Schedulers.io())
+            .subscribe({ rate ->
+                storage.setFeeRates(listOf(rate))
+                listener.onUpdate(listOf(rate))
+            }, {
+
             })
             .also {
                 disposables.add(it)

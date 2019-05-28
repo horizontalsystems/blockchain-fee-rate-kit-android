@@ -2,11 +2,11 @@ package io.horizontalsystems.feeratekit
 
 import android.content.Context
 import androidx.room.Room
-import io.horizontalsystems.feeratekit.api.IpfsFeeRate
+import io.horizontalsystems.feeratekit.api.FeeRatesProvider
 import io.horizontalsystems.feeratekit.storage.KitDatabase
 import io.horizontalsystems.feeratekit.storage.Storage
 
-class FeeRateKit(private val context: Context, var listener: Listener? = null) : FeeRateSyncer.Listener {
+class FeeRateKit(infuraProjectId: String? = null, infuraProjectSecret: String? = null, private val context: Context, var listener: Listener? = null) : FeeRateSyncer.Listener {
 
     interface Listener {
         fun onRefresh(rates: List<FeeRate>)
@@ -16,7 +16,7 @@ class FeeRateKit(private val context: Context, var listener: Listener? = null) :
     private val feeRateSyncer: FeeRateSyncer
 
     init {
-        val apiFeeRate = IpfsFeeRate()
+        val apiFeeRate = FeeRatesProvider(infuraProjectId, infuraProjectSecret)
 
         storage = Storage(buildDatabase())
         feeRateSyncer = FeeRateSyncer(storage, apiFeeRate, this)
