@@ -15,7 +15,11 @@ data class FeeRate(
     val mediumPriority: Long,
     val highPriority: Long,
     val date: Long
-)
+) {
+    fun safeLow(): Long = Math.min(lowPriority, coin.maximumRate())
+    fun safeMedium(): Long = Math.min(mediumPriority, coin.maximumRate())
+    fun safeHigh(): Long = Math.min(highPriority, coin.maximumRate())
+}
 
 enum class Coin(val code: String) {
     BITCOIN("BTC"),
@@ -40,11 +44,11 @@ enum class Coin(val code: String) {
                 date = 1543211299
             )
             DASH -> FeeRate(
-                    coin = this,
-                    lowPriority = 1,
-                    mediumPriority = 1,
-                    highPriority = 2,
-                    date = 1557224133
+                coin = this,
+                lowPriority = 1,
+                mediumPriority = 1,
+                highPriority = 2,
+                date = 1557224133
             )
             ETHEREUM -> FeeRate(
                 coin = this,
@@ -57,11 +61,11 @@ enum class Coin(val code: String) {
     }
 
     fun maximumRate(): Long {
-        return when(this) {
-            BITCOIN -> 5_700
-            BITCOIN_CASH -> 14_300
-            DASH -> 2
-            ETHEREUM -> 4_500_000_000_000
+        return when (this) {
+            BITCOIN -> 5_000
+            BITCOIN_CASH -> 500
+            DASH -> 500
+            ETHEREUM -> 3_000_000_000_000
         }
     }
 }
