@@ -6,7 +6,7 @@ import io.reactivex.Maybe
 import io.reactivex.functions.Function3
 import java.util.*
 
-class FeeRatesProvider(private val infuraKey: String) {
+class FeeRatesProvider(private val infuraKey: String?) {
 
     fun getFeeRatesFromIpfs(url: String, timeoutInSeconds: Int = 60): Maybe<List<FeeRate>> {
         return Maybe.create { subscriber ->
@@ -44,6 +44,8 @@ class FeeRatesProvider(private val infuraKey: String) {
     }
 
     fun getGasPriceFromInfura(): Maybe<FeeRate> {
+        infuraKey?: return Maybe.empty()
+
         val infuraUrl = "https://kovan.infura.io/$infuraKey"
 
         return ApiManager().getGasPrice(infuraUrl)

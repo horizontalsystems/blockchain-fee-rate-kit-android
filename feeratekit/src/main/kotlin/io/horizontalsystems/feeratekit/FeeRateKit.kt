@@ -6,7 +6,7 @@ import io.horizontalsystems.feeratekit.api.FeeRatesProvider
 import io.horizontalsystems.feeratekit.storage.KitDatabase
 import io.horizontalsystems.feeratekit.storage.Storage
 
-class FeeRateKit(infuraKey: String, private val context: Context, var listener: Listener? = null) : FeeRateSyncer.Listener {
+class FeeRateKit(infuraKey: String? = null, private val context: Context, var listener: Listener? = null) : FeeRateSyncer.Listener {
 
     interface Listener {
         fun onRefresh(rates: List<FeeRate>)
