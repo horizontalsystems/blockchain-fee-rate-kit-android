@@ -37,7 +37,7 @@ class FeeRateSyncer(
 
     private fun syncFeeRate() {
         feeRatesProvider.getFeeRatesFromIpfs(FeeRatesProvider.mainUrl, 20)
-            .onErrorResumeNext(feeRatesProvider.getFeeRatesFromIpfs(FeeRatesProvider.fallbackUrl, 60))
+            .onErrorResumeNext(feeRatesProvider.getFeeRatesFromIpfs(FeeRatesProvider.fallbackUrl, 40))
             .subscribeOn(Schedulers.io())
             .subscribe({ rates ->
                 storage.setFeeRates(rates)

@@ -1,13 +1,12 @@
 package io.horizontalsystems.feeratekit.api
 
+import android.util.Base64
 import android.util.Log
 import com.eclipsesource.json.Json
 import com.eclipsesource.json.JsonArray
 import com.eclipsesource.json.JsonObject
 import com.eclipsesource.json.JsonValue
 import io.reactivex.Maybe
-import org.web3j.protocol.Web3j
-import org.web3j.protocol.http.HttpService
 import java.io.BufferedOutputStream
 import java.io.BufferedWriter
 import java.io.OutputStreamWriter
@@ -43,12 +42,38 @@ class ApiManager {
     }
 
     //Infura part
-    fun getGasPrice(infuraUrl: String): Maybe<BigInteger> {
-        val web3j: Web3j = Web3j.build(HttpService(infuraUrl))
-        return web3j.ethGasPrice()
-            .flowable()
-            .map { it.gasPrice }
-            .firstElement()
+    fun getGasPriceFromInfura(infuraProjectId: String, infuraSecret: String): Maybe<BigInteger> {
+        return Maybe.create { subscriber ->
+            try {
+                val requestData = JsonObject().apply {
+                    this["jsonrpc"] = "2.0"
+                    this["method"] = "eth_gasPrice"
+                    this["params"] = JsonArray()
+                    this["id"] = 1
+                }
+
+                val infuraUrl = "https://mainnet.infura.io/v3/$infuraProjectId"
+
+                val userCredentials = ":$infuraSecret"
+                val basicAuth = "Basic " + String(Base64.encode(userCredentials.toByteArray(), Base64.DEFAULT))
+
+                val response = post(infuraUrl, requestData.toString(), basicAuth)
+
+                val responseObject = response.asObject()
+
+                logger.info("Received gasPrice fromInfura $responseObject")
+
+                val gasPriceInHex = responseObject["result"].asString().replace("0x","")
+
+                val gasPrice = BigInteger(gasPriceInHex, 16)
+
+                subscriber.onSuccess(gasPrice)
+                subscriber.onComplete()
+            } catch (e: Exception) {
+                Log.e("Infura", "exception", e)
+                subscriber.onError(e)
+            }
+        }
     }
 
     //BCoin part
@@ -79,9 +104,12 @@ class ApiManager {
         }
     }
 
-    private fun post(resource: String, data: String): JsonValue {
+    private fun post(resource: String, data: String, basicAuth: String? = null): JsonValue {
         val url = URL(resource)
         val urlConnection = url.openConnection() as HttpURLConnection
+        basicAuth?.let {
+            urlConnection.setRequestProperty("Authorization", it)
+        }
         urlConnection.requestMethod = "POST"
         val out = BufferedOutputStream(urlConnection.outputStream)
 

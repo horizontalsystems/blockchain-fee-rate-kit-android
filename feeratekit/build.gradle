@@ -45,9 +45,6 @@ dependencies {
     //  JSON
     implementation 'com.eclipsesource.minimal-json:minimal-json:0.9.5'
 
-    //Infura
-    implementation 'org.web3j:core:4.1.0-android'
-
     //  Test helpers
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.1'
     testImplementation "androidx.room:room-testing:$roomVersion"
