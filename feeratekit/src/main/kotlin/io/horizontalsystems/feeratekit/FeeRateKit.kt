@@ -48,8 +48,22 @@ class FeeRateKit(infuraKey: String, private val context: Context, var listener: 
     }
 
     private fun getRate(coin: Coin): FeeRate {
-        return storage.getFeeRate(coin) ?: coin.defaultRate()
+        val rateFromStorage = storage.getFeeRate(coin) ?: return coin.defaultRate()
+        return getSafeRate(rateFromStorage)
     }
+
+    private fun getSafeRate(rate: FeeRate): FeeRate {
+        return FeeRate(
+            rate.coin,
+            getSafeValue(rate.lowPriority, rate.coin),
+            getSafeValue(rate.mediumPriority, rate.coin),
+            getSafeValue(rate.highPriority, rate.coin),
+            rate.date
+        )
+    }
+
+    private fun getSafeValue(rate: Long, coin: Coin) =
+        if (rate < coin.maximumRate()) rate else coin.maximumRate()
 
     private fun buildDatabase(): KitDatabase {
         return Room

@@ -55,4 +55,13 @@ enum class Coin(val code: String) {
             )
         }
     }
+
+    fun maximumRate(): Long {
+        return when(this) {
+            BITCOIN -> 5_700
+            BITCOIN_CASH -> 14_300
+            DASH -> 2
+            ETHEREUM -> 4_500_000_000_000
+        }
+    }
 }
