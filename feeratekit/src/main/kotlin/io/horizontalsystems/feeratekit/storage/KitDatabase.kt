@@ -2,11 +2,10 @@ package io.horizontalsystems.feeratekit.storage
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import io.horizontalsystems.feeratekit.FeeRate
 
 @Database(
-    version = 1,
+    version = 2,
     exportSchema = false,
     entities = [FeeRate::class]
 )

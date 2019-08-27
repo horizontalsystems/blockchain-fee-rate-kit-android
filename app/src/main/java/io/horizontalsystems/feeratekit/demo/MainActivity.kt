@@ -27,9 +27,9 @@ class MainActivity : AppCompatActivity() {
         viewModel.rates.observe(this, Observer { rates ->
             ratesTextView.text = rates.joinToString("\n\n") { rate ->
                 "Coin: ${rate.coin.code}\n" +
-                "Low: ${rate.lowPriority}\n" +
-                "Medium: ${rate.mediumPriority}\n" +
-                "High: ${rate.highPriority}"
+                        "Low: rate=${rate.lowPriority}, duration=${rate.lowPriorityDuration / 60} minutes\n" +
+                        "Medium: rate=${rate.mediumPriority}, duration=${rate.mediumPriorityDuration / 60} minutes\n" +
+                        "High: rate=${rate.highPriority}, duration=${rate.highPriorityDuration / 60} minutes"
             }
         })
 
