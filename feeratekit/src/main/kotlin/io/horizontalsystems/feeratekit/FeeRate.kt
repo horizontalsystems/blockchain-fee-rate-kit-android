@@ -28,6 +28,7 @@ enum class Coin(val code: String) {
     BITCOIN("BTC"),
     BITCOIN_CASH("BCH"),
     DASH("DASH"),
+    GROESTLCOIN("GRS"),
     ETHEREUM("ETH");
 
     fun defaultRate(): FeeRate {
@@ -62,6 +63,16 @@ enum class Coin(val code: String) {
                 highPriorityDuration = 1,
                 date = 1557224133
             )
+            GROESTLCOIN -> FeeRate(
+                    coin = this,
+                    lowPriority = 20,
+                    lowPriorityDuration = 1,
+                    mediumPriority = 20,
+                    mediumPriorityDuration = 1,
+                    highPriority = 40,
+                    highPriorityDuration = 1,
+                    date = 1570124714
+            )
             ETHEREUM -> FeeRate(
                 coin = this,
                 lowPriority = 13_000_000_000,
@@ -80,6 +91,7 @@ enum class Coin(val code: String) {
             BITCOIN -> 5_000
             BITCOIN_CASH -> 500
             DASH -> 500
+            GROESTLCOIN -> 500
             ETHEREUM -> 3_000_000_000_000
         }
     }
@@ -89,6 +101,7 @@ enum class Coin(val code: String) {
             BITCOIN -> 1
             BITCOIN_CASH -> 1
             DASH -> 1
+            GROESTLCOIN -> 1
             ETHEREUM -> 100_000_000
         }
     }

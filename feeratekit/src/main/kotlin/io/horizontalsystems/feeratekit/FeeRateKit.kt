@@ -35,6 +35,10 @@ class FeeRateKit(infuraProjectId: String? = null, infuraProjectSecret: String? =
         return getRate(Coin.DASH)
     }
 
+    fun groestlcoin(): FeeRate {
+        return getRate(Coin.GROESTLCOIN)
+    }
+
     fun ethereum(): FeeRate {
         return getRate(Coin.ETHEREUM)
     }
