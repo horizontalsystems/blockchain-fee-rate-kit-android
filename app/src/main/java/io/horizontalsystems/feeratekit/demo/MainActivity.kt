@@ -24,8 +24,8 @@ class MainActivity : AppCompatActivity() {
         ratesTextView = findViewById(R.id.feeRates)
         ratesRefresh = findViewById(R.id.refreshButton)
 
-        viewModel.rates.observe(this, Observer { rates ->
-            ratesTextView.text = rates.joinToString("\n\n") { rate ->
+        viewModel.rates.observe(this, Observer { rate ->
+            ratesTextView.text = rate.joinToString("\n\n") { rate ->
                 "Coin: ${rate.coin.code}\n" +
                         "Low: rate=${rate.lowPriority}, duration=${rate.lowPriorityDuration / 60} minutes\n" +
                         "Medium: rate=${rate.mediumPriority}, duration=${rate.mediumPriorityDuration / 60} minutes\n" +

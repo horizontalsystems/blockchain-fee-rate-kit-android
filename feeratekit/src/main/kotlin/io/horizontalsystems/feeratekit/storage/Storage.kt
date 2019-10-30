@@ -1,7 +1,7 @@
 package io.horizontalsystems.feeratekit.storage
 
-import io.horizontalsystems.feeratekit.Coin
-import io.horizontalsystems.feeratekit.FeeRate
+import io.horizontalsystems.feeratekit.model.Coin
+import io.horizontalsystems.feeratekit.model.FeeRate
 import io.horizontalsystems.feeratekit.IStorage
 
 class Storage(private val store: KitDatabase) : IStorage {
@@ -9,7 +9,7 @@ class Storage(private val store: KitDatabase) : IStorage {
         return store.feeRate.getByCoin(coin.code)
     }
 
-    override fun setFeeRates(rates: List<FeeRate>) {
-        store.feeRate.insert(rates)
+    override fun setFeeRate(rate: FeeRate) {
+        store.feeRate.insert(rate)
     }
 }

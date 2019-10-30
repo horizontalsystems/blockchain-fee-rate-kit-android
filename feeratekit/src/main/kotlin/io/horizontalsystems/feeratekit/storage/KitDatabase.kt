@@ -2,7 +2,7 @@ package io.horizontalsystems.feeratekit.storage
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import io.horizontalsystems.feeratekit.FeeRate
+import io.horizontalsystems.feeratekit.model.FeeRate
 
 @Database(
     version = 2,
