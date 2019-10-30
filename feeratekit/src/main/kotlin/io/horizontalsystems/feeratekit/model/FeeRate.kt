@@ -1,4 +1,4 @@
-package io.horizontalsystems.feeratekit
+package io.horizontalsystems.feeratekit.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -29,6 +29,12 @@ enum class Coin(val code: String) {
     BITCOIN_CASH("BCH"),
     DASH("DASH"),
     ETHEREUM("ETH");
+
+    companion object {
+        fun getCoinByCode(code: String): Coin? {
+            return values().find { coin -> coin.code.equals(code)}
+        }
+    }
 
     fun defaultRate(): FeeRate {
         return when (this) {

@@ -1,12 +1,12 @@
 package io.horizontalsystems.feeratekit.storage
 
 import androidx.room.*
-import io.horizontalsystems.feeratekit.FeeRate
+import io.horizontalsystems.feeratekit.model.FeeRate
 
 @Dao
 interface FeeRateDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(rates: List<FeeRate>)
+    fun insert(rate: FeeRate)
 
     @Delete
     fun delete(rate: FeeRate)

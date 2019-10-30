@@ -1,7 +1,7 @@
 package io.horizontalsystems.feeratekit.storage
 
 import androidx.room.TypeConverter
-import io.horizontalsystems.feeratekit.Coin
+import io.horizontalsystems.feeratekit.model.Coin
 
 class EnumConverter {
     @TypeConverter

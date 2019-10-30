@@ -2,24 +2,31 @@ package io.horizontalsystems.feeratekit
 
 import android.content.Context
 import androidx.room.Room
-import io.horizontalsystems.feeratekit.api.FeeRatesProvider
+import io.horizontalsystems.feeratekit.providers.FeeRatesProvider
+import io.horizontalsystems.feeratekit.model.Coin
+import io.horizontalsystems.feeratekit.model.FeeRate
+import io.horizontalsystems.feeratekit.providers.FeeProviderConfig
 import io.horizontalsystems.feeratekit.storage.KitDatabase
 import io.horizontalsystems.feeratekit.storage.Storage
 
-class FeeRateKit(infuraProjectId: String? = null, infuraProjectSecret: String? = null, private val context: Context, var listener: Listener? = null) : FeeRateSyncer.Listener {
+class FeeRateKit(
+    providerConfig: FeeProviderConfig,
+    private val context: Context,
+    var listener: Listener? = null)
+    : FeeRateSyncer.Listener {
 
     interface Listener {
-        fun onRefresh(rates: List<FeeRate>)
+        fun onRefresh(rate: FeeRate)
     }
 
     private val storage: IStorage
     private val feeRateSyncer: FeeRateSyncer
 
     init {
-        val apiFeeRate = FeeRatesProvider(infuraProjectId, infuraProjectSecret)
+        val feeRateProvider = FeeRatesProvider( providerConfig )
 
         storage = Storage(buildDatabase())
-        feeRateSyncer = FeeRateSyncer(storage, apiFeeRate, this)
+        feeRateSyncer = FeeRateSyncer(storage, feeRateProvider, this)
         feeRateSyncer.start()
     }
 
@@ -39,12 +46,21 @@ class FeeRateKit(infuraProjectId: String? = null, infuraProjectSecret: String? =
         return getRate(Coin.ETHEREUM)
     }
 
+    fun getRate(coinCode: String): FeeRate?{
+
+        Coin.getCoinByCode(code = coinCode)?.also {
+             return getRate(it)
+        }
+
+        return null
+    }
+
     fun refresh() {
         feeRateSyncer.refresh()
     }
 
-    override fun onUpdate(rates: List<FeeRate>) {
-        listener?.onRefresh(rates)
+    override fun onUpdate(rate: FeeRate) {
+        listener?.onRefresh(rate)
     }
 
     private fun getRate(coin: Coin): FeeRate {
