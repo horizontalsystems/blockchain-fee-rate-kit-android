@@ -16,9 +16,10 @@ import io.reactivex.functions.Function3
  * Bitcoin-Core RPC Fee provider
  */
 class BtcCoreProvider(
-    private val btcCoreRpcUrl:String?,
-    private val btcCoreRpcUSer:String? = null,
-    private val btcCoreRpcPassword:String? = null){
+    private val btcCoreRpcUrl: String?,
+    private val btcCoreRpcUSer: String? = null,
+    private val btcCoreRpcPassword: String? = null
+) {
 
     private val logger = Logger.getLogger("BtcCoreProvider")
 
@@ -42,7 +43,7 @@ class BtcCoreProvider(
         return Maybe.create { subscriber ->
             try {
                 val jsonArray = JsonArray()
-                var basicAuth : String? = null
+                var basicAuth: String? = null
 
                 jsonArray.add(priorityInNumberOfBlocks)
 
@@ -62,11 +63,11 @@ class BtcCoreProvider(
                 }
 
                 btcCoreRpcUrl?.let {
-                    val response = HttpUtils.post(btcCoreRpcUrl, requestData.toString(),basicAuth)
+                    val response = HttpUtils.post(btcCoreRpcUrl, requestData.toString(), basicAuth)
                     val responseObject = response.asObject()
                     var fee: Float
 
-                    if(responseObject["result"].asObject()["feerate"] != null)
+                    if (responseObject["result"].asObject()["feerate"] != null)
                         fee = responseObject["result"].asObject()["feerate"].asFloat()
                     else
                         fee = responseObject["result"].asObject()["fee"].asFloat()
@@ -84,10 +85,16 @@ class BtcCoreProvider(
 
     fun getFeeRates(): Maybe<FeeRate> {
 
-        return Maybe.zip( getEstimatedSmartFee(LOW_PRIORITY_BLOCKS),
-                          getEstimatedSmartFee(MEDIUM_PRIORITY_BLOCKS),
-                          getEstimatedSmartFee(HIGH_PRIORITY_BLOCKS),
-            Function3<Float, Float, Float, Triple<Float, Float, Float>> { t1, t2, t3 -> Triple(t1, t2, t3) })
+        return Maybe.zip(getEstimatedSmartFee(LOW_PRIORITY_BLOCKS),
+                         getEstimatedSmartFee(MEDIUM_PRIORITY_BLOCKS),
+                         getEstimatedSmartFee(HIGH_PRIORITY_BLOCKS),
+                         Function3<Float, Float, Float, Triple<Float, Float, Float>> { t1, t2, t3 ->
+                             Triple(
+                                 t1,
+                                 t2,
+                                 t3
+                             )
+                         })
             .map {
                 val coin = Coin.BITCOIN
                 val defaultRate = coin.defaultRate()
@@ -106,7 +113,7 @@ class BtcCoreProvider(
 
     private fun feeInSatoshiPerByte(btcPerKbyte: Float): Long {
         (btcPerKbyte * 100_000_000 / 1024).toLong().let {
-            if(it < 1)
+            if (it < 1)
                 return 1
             else
                 return it
