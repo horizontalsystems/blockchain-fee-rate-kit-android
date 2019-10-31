@@ -12,8 +12,8 @@ import io.horizontalsystems.feeratekit.storage.Storage
 class FeeRateKit(
     providerConfig: FeeProviderConfig,
     private val context: Context,
-    var listener: Listener? = null)
-    : FeeRateSyncer.Listener {
+    var listener: Listener? = null
+) : FeeRateSyncer.Listener {
 
     interface Listener {
         fun onRefresh(rate: FeeRate)
@@ -23,7 +23,7 @@ class FeeRateKit(
     private val feeRateSyncer: FeeRateSyncer
 
     init {
-        val feeRateProvider = FeeRatesProvider( providerConfig )
+        val feeRateProvider = FeeRatesProvider(providerConfig)
 
         storage = Storage(buildDatabase())
         feeRateSyncer = FeeRateSyncer(storage, feeRateProvider, this)
@@ -46,10 +46,10 @@ class FeeRateKit(
         return getRate(Coin.ETHEREUM)
     }
 
-    fun getRate(coinCode: String): FeeRate?{
+    fun getRate(coinCode: String): FeeRate? {
 
         Coin.getCoinByCode(code = coinCode)?.also {
-             return getRate(it)
+            return getRate(it)
         }
 
         return null

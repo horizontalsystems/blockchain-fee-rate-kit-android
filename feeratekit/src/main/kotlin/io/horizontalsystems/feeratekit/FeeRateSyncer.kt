@@ -18,9 +18,9 @@ class FeeRateSyncer(
         fun onUpdate(rate: FeeRate)
     }
 
-    companion object{
-        const val BTC_CORE_SYNC_INTERVAL :Int = 6 //minutes
-        const val INFURA_SYNC_INTERVAL  :Int = 3 //minutes
+    companion object {
+        const val BTC_CORE_SYNC_INTERVAL: Int = 6 //minutes
+        const val INFURA_SYNC_INTERVAL: Int = 3 //minutes
     }
 
     private val disposables = CompositeDisposable()

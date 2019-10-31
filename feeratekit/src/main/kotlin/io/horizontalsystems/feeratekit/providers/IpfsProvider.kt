@@ -21,10 +21,10 @@ class IpfsProvider {
         return Maybe.create { subscriber ->
             try {
                 val jsonObject = getJson(
-                        "https://$mainUrl",
-                        "ipns/QmXTJZBMMRmBbPun6HFt3tmb3tfYF2usLPxFoacL7G5uMX/blockchain/estimatefee/feerates.json",
-                        timeoutInSeconds
-                    )
+                    "https://$mainUrl",
+                    "ipns/QmXTJZBMMRmBbPun6HFt3tmb3tfYF2usLPxFoacL7G5uMX/blockchain/estimatefee/feerates.json",
+                    timeoutInSeconds
+                )
 
                 val ratesObject = jsonObject.get("feerates").asObject()
                 val rates = mutableListOf<FeeRate>()

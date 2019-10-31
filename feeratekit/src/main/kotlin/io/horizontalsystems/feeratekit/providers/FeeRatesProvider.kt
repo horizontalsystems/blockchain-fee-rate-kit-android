@@ -6,11 +6,15 @@ import io.reactivex.Maybe
 
 class FeeRatesProvider(providerConfig: FeeProviderConfig) {
 
-    private val btcCoreProvider = BtcCoreProvider(providerConfig.btcCoreRpcUrl,
-                                                  providerConfig.btcCoreRpcUSer,
-                                                  providerConfig.btcCoreRpcPassword)
-    private val infuraProvider = InfuraProvider(providerConfig.infuraProjectId,
-                                                providerConfig.infuraProjectSecret)
+    private val btcCoreProvider = BtcCoreProvider(
+        providerConfig.btcCoreRpcUrl,
+        providerConfig.btcCoreRpcUSer,
+        providerConfig.btcCoreRpcPassword
+    )
+    private val infuraProvider = InfuraProvider(
+        providerConfig.infuraProjectId,
+        providerConfig.infuraProjectSecret
+    )
 
     fun getFeeRates(coin: Coin): Maybe<FeeRate> {
 
