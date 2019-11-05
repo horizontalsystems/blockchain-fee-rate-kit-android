@@ -4,12 +4,16 @@ import io.horizontalsystems.feeratekit.model.Coin
 import io.horizontalsystems.feeratekit.model.FeeRate
 import io.horizontalsystems.feeratekit.IStorage
 
-class Storage(private val store: KitDatabase) : IStorage {
+class InMemoryStorage() : IStorage {
+
+    private var ratesDb: MutableMap<Coin, FeeRate> = mutableMapOf()
+
     override fun getFeeRate(coin: Coin): FeeRate? {
-        return store.feeRate.getByCoin(coin.code)
+        return ratesDb.get(coin)
     }
 
     override fun setFeeRate(rate: FeeRate) {
-        store.feeRate.insert(rate)
+        ratesDb.set(rate.coin, rate)
     }
+
 }

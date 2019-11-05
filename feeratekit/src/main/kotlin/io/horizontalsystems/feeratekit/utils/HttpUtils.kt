@@ -16,11 +16,11 @@ class HttpUtils {
 
             val url = URL(resource)
             val urlConnection = url.openConnection() as HttpURLConnection
-
             basicAuth?.let {
                 urlConnection.setRequestProperty("Authorization", it)
             }
             urlConnection.requestMethod = "POST"
+            urlConnection.setDoOutput(true);
             val out = BufferedOutputStream(urlConnection.outputStream)
 
             val writer = BufferedWriter(OutputStreamWriter(out, "UTF-8"))

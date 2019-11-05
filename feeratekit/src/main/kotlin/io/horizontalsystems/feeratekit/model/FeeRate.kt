@@ -1,82 +1,80 @@
 package io.horizontalsystems.feeratekit.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import io.horizontalsystems.feeratekit.storage.EnumConverter
+import java.util.*
 
-@Entity
-@TypeConverters(EnumConverter::class)
 
 data class FeeRate(
-    @PrimaryKey
-    val coin: Coin,
-    val lowPriority: Long,
-    val lowPriorityDuration: Long,
-    val mediumPriority: Long,
-    val mediumPriorityDuration: Long,
-    val highPriority: Long,
-    val highPriorityDuration: Long,
-    val date: Long
-) {
+        val coin: Coin,
+        val lowPriority: Long,
+        val lowPriorityDuration: Long,
+        val mediumPriority: Long,
+        val mediumPriorityDuration: Long,
+        val highPriority: Long,
+        val highPriorityDuration: Long,
+        val date: Long) {
+
     fun safeLow(): Long = Math.max(coin.minRate(), Math.min(lowPriority, coin.maxRate()))
     fun safeMedium(): Long = Math.max(coin.minRate(), Math.min(mediumPriority, coin.maxRate()))
     fun safeHigh(): Long = Math.max(coin.minRate(), Math.min(highPriority, coin.maxRate()))
+
 }
 
-enum class Coin(val code: String) {
-    BITCOIN("BTC"),
-    BITCOIN_CASH("BCH"),
-    DASH("DASH"),
-    ETHEREUM("ETH");
+enum class Coin(
+        val code: String,
+        val fallbackDataExpiration: Int) {
+
+    BITCOIN("BTC", 5 * 60),
+    BITCOIN_CASH("BCH", 0),
+    DASH("DASH", 0),
+    ETHEREUM("ETH", 3 * 60);
 
     companion object {
         fun getCoinByCode(code: String): Coin? {
-            return values().find { coin -> coin.code.equals(code)}
+            return values().find { coin -> coin.code.equals(code) }
         }
     }
 
     fun defaultRate(): FeeRate {
         return when (this) {
             BITCOIN -> FeeRate(
-                coin = this,
-                lowPriority = 20,
-                lowPriorityDuration = 1440 * 60,
-                mediumPriority = 40,
-                mediumPriorityDuration = 120 * 60,
-                highPriority = 80,
-                highPriorityDuration = 30 * 60,
-                date = 1543211299
+                    coin = this,
+                    lowPriority = 20,
+                    lowPriorityDuration = 1440 * 60,
+                    mediumPriority = 40,
+                    mediumPriorityDuration = 120 * 60,
+                    highPriority = 80,
+                    highPriorityDuration = 30 * 60,
+                    date = Date().time / 1000
             )
             BITCOIN_CASH -> FeeRate(
-                coin = this,
-                lowPriority = 1,
-                lowPriorityDuration = 240 * 60,
-                mediumPriority = 3,
-                mediumPriorityDuration = 120 * 60,
-                highPriority = 5,
-                highPriorityDuration = 30 * 60,
-                date = 1543211299
+                    coin = this,
+                    lowPriority = 1,
+                    lowPriorityDuration = 240 * 60,
+                    mediumPriority = 3,
+                    mediumPriorityDuration = 120 * 60,
+                    highPriority = 5,
+                    highPriorityDuration = 30 * 60,
+                    date = Date().time / 1000
             )
             DASH -> FeeRate(
-                coin = this,
-                lowPriority = 1,
-                lowPriorityDuration = 1,
-                mediumPriority = 1,
-                mediumPriorityDuration = 1,
-                highPriority = 2,
-                highPriorityDuration = 1,
-                date = 1557224133
+                    coin = this,
+                    lowPriority = 1,
+                    lowPriorityDuration = 1,
+                    mediumPriority = 1,
+                    mediumPriorityDuration = 1,
+                    highPriority = 2,
+                    highPriorityDuration = 1,
+                    date = Date().time / 1000
             )
             ETHEREUM -> FeeRate(
-                coin = this,
-                lowPriority = 13_000_000_000,
-                lowPriorityDuration = 30 * 60,
-                mediumPriority = 16_000_000_000,
-                mediumPriorityDuration = 5 * 60,
-                highPriority = 19_000_000_000,
-                highPriorityDuration = 2 * 60,
-                date = 1543211299
+                    coin = this,
+                    lowPriority = 13_000_000_000,
+                    lowPriorityDuration = 30 * 60,
+                    mediumPriority = 16_000_000_000,
+                    mediumPriorityDuration = 5 * 60,
+                    highPriority = 19_000_000_000,
+                    highPriorityDuration = 2 * 60,
+                    date = Date().time / 1000
             )
         }
     }
@@ -98,4 +96,13 @@ enum class Coin(val code: String) {
             ETHEREUM -> 100_000_000
         }
     }
+}
+
+class FeeProviderConfig(
+        val infuraProjectId: String? = null,
+        val infuraProjectSecret: String? = null,
+        val infuraApiUrl: String? = null,
+        val btcCoreRpcUrl: String? = null,
+        val btcCoreRpcUSer: String? = null,
+        val btcCoreRpcPassword: String? = null) {
 }
