@@ -5,9 +5,10 @@ import android.util.Log
 import com.eclipsesource.json.JsonArray
 import com.eclipsesource.json.JsonObject
 import io.horizontalsystems.feeratekit.model.Coin
+import io.horizontalsystems.feeratekit.model.FeeProviderConfig
 import io.horizontalsystems.feeratekit.model.FeeRate
 import io.horizontalsystems.feeratekit.utils.HttpUtils
-import io.reactivex.Maybe
+import io.reactivex.Single
 import java.util.*
 import java.util.logging.Logger
 import io.reactivex.functions.Function3
@@ -15,16 +16,12 @@ import io.reactivex.functions.Function3
 /**
  * Bitcoin-Core RPC Fee provider
  */
-class BtcCoreProvider(
-    private val btcCoreRpcUrl: String?,
-    private val btcCoreRpcUSer: String? = null,
-    private val btcCoreRpcPassword: String? = null
-) {
+class BtcCoreProvider(private val providerConfig: FeeProviderConfig) : IFeeRateProvider {
 
     private val logger = Logger.getLogger("BtcCoreProvider")
 
-    private val LOW_PRIORITY_BLOCKS = 100;
-    private val MEDIUM_PRIORITY_BLOCKS = 10;
+    private val LOW_PRIORITY_BLOCKS = 10;
+    private val MEDIUM_PRIORITY_BLOCKS = 5;
     private val HIGH_PRIORITY_BLOCKS = 1;
 
 
@@ -39,8 +36,8 @@ class BtcCoreProvider(
         }
     */
 
-    private fun getEstimatedSmartFee(priorityInNumberOfBlocks: Int): Maybe<Float> {
-        return Maybe.create { subscriber ->
+    private fun getEstimatedSmartFee(priorityInNumberOfBlocks: Int): Single<Float> {
+        return Single.create { subscriber ->
             try {
                 val jsonArray = JsonArray()
                 var basicAuth: String? = null
@@ -57,13 +54,13 @@ class BtcCoreProvider(
                 logger.info("Request feeRate for Bitcoin $requestData")
 
 
-                btcCoreRpcUSer?.let {
-                    val userCredentials = "$btcCoreRpcUSer:$btcCoreRpcPassword"
+                providerConfig.btcCoreRpcUSer?.let {
+                    val userCredentials = "${providerConfig.btcCoreRpcUSer}:${providerConfig.btcCoreRpcPassword}"
                     basicAuth = "Basic " + String(Base64.encode(userCredentials.toByteArray(), Base64.DEFAULT))
                 }
 
-                btcCoreRpcUrl?.let {
-                    val response = HttpUtils.post(btcCoreRpcUrl, requestData.toString(), basicAuth)
+                providerConfig.btcCoreRpcUrl?.let {
+                    val response = HttpUtils.post(providerConfig.btcCoreRpcUrl, requestData.toString(), basicAuth)
                     val responseObject = response.asObject()
                     var fee: Float
 
@@ -73,7 +70,6 @@ class BtcCoreProvider(
                         fee = responseObject["result"].asObject()["fee"].asFloat()
 
                     subscriber.onSuccess(fee)
-                    subscriber.onComplete()
                 }
 
             } catch (e: Exception) {
@@ -83,32 +79,32 @@ class BtcCoreProvider(
         }
     }
 
-    fun getFeeRates(): Maybe<FeeRate> {
+    override fun getFeeRates(): Single<FeeRate> {
 
-        return Maybe.zip(getEstimatedSmartFee(LOW_PRIORITY_BLOCKS),
-                         getEstimatedSmartFee(MEDIUM_PRIORITY_BLOCKS),
-                         getEstimatedSmartFee(HIGH_PRIORITY_BLOCKS),
-                         Function3<Float, Float, Float, Triple<Float, Float, Float>> { t1, t2, t3 ->
-                             Triple(
-                                 t1,
-                                 t2,
-                                 t3
-                             )
-                         })
-            .map {
-                val coin = Coin.BITCOIN
-                val defaultRate = coin.defaultRate()
-                FeeRate(
-                    coin = coin,
-                    lowPriority = feeInSatoshiPerByte(it.first),
-                    lowPriorityDuration = defaultRate.lowPriorityDuration,
-                    mediumPriority = feeInSatoshiPerByte(it.second),
-                    mediumPriorityDuration = defaultRate.mediumPriorityDuration,
-                    highPriority = feeInSatoshiPerByte(it.third),
-                    highPriorityDuration = defaultRate.highPriorityDuration,
-                    date = Date().time
-                )
-            }
+        return Single.zip(getEstimatedSmartFee(LOW_PRIORITY_BLOCKS),
+                          getEstimatedSmartFee(MEDIUM_PRIORITY_BLOCKS),
+                          getEstimatedSmartFee(HIGH_PRIORITY_BLOCKS),
+                          Function3<Float, Float, Float, Triple<Float, Float, Float>> { t1, t2, t3 ->
+                              Triple(
+                                      t1,
+                                      t2,
+                                      t3
+                              )
+                          })
+                .map {
+                    val coin = Coin.BITCOIN
+                    val defaultRate = coin.defaultRate()
+                    FeeRate(
+                            coin = coin,
+                            lowPriority = feeInSatoshiPerByte(it.first),
+                            lowPriorityDuration = defaultRate.lowPriorityDuration,
+                            mediumPriority = feeInSatoshiPerByte(it.second),
+                            mediumPriorityDuration = defaultRate.mediumPriorityDuration,
+                            highPriority = feeInSatoshiPerByte(it.third),
+                            highPriorityDuration = defaultRate.highPriorityDuration,
+                            date = Date().time / 1000
+                    )
+                }
     }
 
     private fun feeInSatoshiPerByte(btcPerKbyte: Float): Long {
