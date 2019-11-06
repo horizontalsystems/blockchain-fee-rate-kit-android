@@ -4,10 +4,8 @@ import io.horizontalsystems.feeratekit.IStorage
 import io.horizontalsystems.feeratekit.model.Coin
 import io.horizontalsystems.feeratekit.model.FeeRate
 import io.reactivex.Single
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import java.util.*
+import java.util.concurrent.Executors
 
 
 class BaseFeeRateProvider(
@@ -16,13 +14,13 @@ class BaseFeeRateProvider(
         private val storage: IStorage)
     : IFeeRateProvider {
 
-    private val coroutineScope = CoroutineScope(Dispatchers.Main)
+    private var executor = Executors.newSingleThreadExecutor()
 
     override fun getFeeRates(): Single<FeeRate> {
 
         return feeRateProvider?.getFeeRates()
                 ?.doOnError { error ->
-                    provideFromFallback() ?:error
+                    provideFromFallback()
                 }
                 ?.doOnSuccess {
                     rate -> storeToFallback(rate)
@@ -32,16 +30,17 @@ class BaseFeeRateProvider(
 
     private fun provideFromFallback(): FeeRate? {
 
-        storage.getFeeRate(this.coin)?.let {
+        return storage.getFeeRate(this.coin)?.let {
             if ((Date().time / 1000) - it.date <= coin.fallbackDataExpiration)
-                return it
+                it
+            else
+                null
         }
 
-        return null
     }
 
     private fun storeToFallback(rate: FeeRate) {
-        coroutineScope.async(Dispatchers.IO) {
+        executor.execute {
             storage.setFeeRate(rate)
         }
     }
