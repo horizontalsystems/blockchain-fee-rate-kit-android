@@ -12,6 +12,8 @@ class HttpUtils {
 
     companion object {
 
+        private const val CONNECTION_TIMEOUT = 5 * 1000 // 5 seconds
+
         fun post(resource: String, data: String, basicAuth: String? = null): JsonValue {
 
             val url = URL(resource)
@@ -20,10 +22,13 @@ class HttpUtils {
                 urlConnection.setRequestProperty("Authorization", it)
             }
             urlConnection.requestMethod = "POST"
-            urlConnection.setDoOutput(true);
-            val out = BufferedOutputStream(urlConnection.outputStream)
+            urlConnection.doOutput = true
+            urlConnection.connectTimeout = CONNECTION_TIMEOUT
+            urlConnection.readTimeout = CONNECTION_TIMEOUT
 
+            val out = BufferedOutputStream(urlConnection.outputStream)
             val writer = BufferedWriter(OutputStreamWriter(out, "UTF-8"))
+
             writer.write(data)
             writer.flush()
             writer.close()
