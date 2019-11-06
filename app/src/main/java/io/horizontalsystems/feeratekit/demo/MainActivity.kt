@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         ratesRefresh = findViewById(R.id.refreshButton)
 
 
-        viewModel.rates.observe(this, Observer { rate->
+        viewModel.feeRate.observe(this, Observer { rate->
             ratesTextView.text = "${ratesTextView.text}\n\n${getText(rate)}"
         })
 

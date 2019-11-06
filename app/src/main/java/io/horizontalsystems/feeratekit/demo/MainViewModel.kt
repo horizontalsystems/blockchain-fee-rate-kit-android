@@ -11,7 +11,7 @@ import io.reactivex.disposables.CompositeDisposable
 
 
 class MainViewModel : ViewModel(), FeeRateKit.Listener {
-    val rates = MutableLiveData<FeeRate>()
+    val feeRate = MutableLiveData<FeeRate>()
 
     var compositeDisposable = CompositeDisposable()
 
@@ -34,13 +34,21 @@ class MainViewModel : ViewModel(), FeeRateKit.Listener {
                 FeeRate(Coin.BITCOIN,0,0,0,0,0,0,0)
             }
             .subscribeOn(Schedulers.io())
-            .subscribe() { t -> rates.postValue(t) })
+            .subscribe() {
+                    t -> feeRate.postValue(t)
+            })
+
         compositeDisposable.add(feeRateKit.getRate("ETH")
             .subscribeOn(Schedulers.io())
-            .subscribe() { t -> rates.postValue(t) })
+            .subscribe() {
+                    t -> feeRate.postValue(t)
+            })
+
         compositeDisposable.add(feeRateKit.getRate("BCH")
             .subscribeOn(Schedulers.io())
-            .subscribe() { t -> rates.postValue(t) })
+            .subscribe() {
+                    t -> feeRate.postValue(t)
+            })
     }
 
     override fun onRefresh(newRate: FeeRate) {
