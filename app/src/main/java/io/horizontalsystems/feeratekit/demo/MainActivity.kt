@@ -10,10 +10,11 @@ import io.horizontalsystems.feeratekit.model.FeeRate
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var viewModel: MainViewModel
+    private lateinit var viewModel: MainViewModel
 
     lateinit var ratesTextView: TextView
-    lateinit var ratesRefresh: Button
+    private lateinit var ratesRefreshBtn: Button
+    private lateinit var statusInfoBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,25 +23,41 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         ratesTextView = findViewById(R.id.feeRates)
-        ratesRefresh = findViewById(R.id.refreshButton)
+        ratesRefreshBtn = findViewById(R.id.refreshButton)
+        statusInfoBtn = findViewById(R.id.statusInfoButton)
 
 
-        viewModel.feeRate.observe(this, Observer { rate->
+        viewModel.feeRateData.observe(this, Observer { rate ->
             ratesTextView.text = "${ratesTextView.text}\n\n${getText(rate)}"
         })
 
-        ratesRefresh.setOnClickListener {
+        ratesRefreshBtn.setOnClickListener {
 
             ratesTextView.text = "Getting values ... "
             viewModel.refresh()
         }
+
+        statusInfoBtn.setOnClickListener {
+
+            ratesTextView.text = "Getting values ... "
+            viewModel.getStatusInfo()
+        }
     }
 
-    private fun getText(rate: FeeRate): String {
+    private fun getText(data: Any): String {
 
-        return "Coin: ${rate.coin.code}\n" +
-                "Low: rate=${rate.lowPriority}, duration=${rate.lowPriorityDuration / 60} minutes\n" +
-                "Medium: rate=${rate.mediumPriority}, duration=${rate.mediumPriorityDuration / 60} minutes\n" +
-                "High: rate=${rate.highPriority}, duration=${rate.highPriorityDuration / 60} minutes"
+        if (data::class == FeeRate::class) {
+
+            val rate = data as FeeRate
+
+            return "Coin: ${rate.coin.code}\n" +
+                    "Low: rate=${rate.lowPriority}, duration=${rate.lowPriorityDuration / 60} minutes\n" +
+                    "Medium: rate=${rate.mediumPriority}, duration=${rate.mediumPriorityDuration / 60} minutes\n" +
+                    "High: rate=${rate.highPriority}, duration=${rate.highPriorityDuration / 60} minutes"
+
+        } else {
+
+            return data.toString()
+        }
     }
 }
