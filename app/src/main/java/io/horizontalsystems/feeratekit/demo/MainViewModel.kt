@@ -11,8 +11,7 @@ import io.reactivex.disposables.CompositeDisposable
 
 
 class MainViewModel : ViewModel(), FeeRateKit.Listener {
-    val feeRate = MutableLiveData<FeeRate>()
-
+    val feeRateData = MutableLiveData<Any>()
     var compositeDisposable = CompositeDisposable()
 
     val feeRateKit: FeeRateKit = FeeRateKit(
@@ -26,28 +25,41 @@ class MainViewModel : ViewModel(), FeeRateKit.Listener {
         this
     )
 
+    fun getStatusInfo() {
+
+        feeRateKit.statusInfo()?.let {
+            compositeDisposable.add(
+                it.onErrorReturn { t ->
+                    mutableMapOf(Pair("No data:", ""))
+                }
+                    .subscribeOn(Schedulers.io())
+                    .subscribe() { t ->
+                        feeRateData.postValue(t)
+                    })
+        }
+    }
+
     fun refresh() {
 
         compositeDisposable.add(feeRateKit.getRate("BTC")
-            .onErrorReturn {
-                    t ->
-                FeeRate(Coin.BITCOIN,0,0,0,0,0,0,0)
+            .onErrorReturn { t ->
+                FeeRate(Coin.BITCOIN, 0, 0, 0, 0, 0, 0, 0)
             }
             .subscribeOn(Schedulers.io())
-            .subscribe() {
-                    t -> feeRate.postValue(t)
+            .subscribe() { t ->
+                feeRateData.postValue(t)
             })
 
         compositeDisposable.add(feeRateKit.getRate("ETH")
             .subscribeOn(Schedulers.io())
-            .subscribe() {
-                    t -> feeRate.postValue(t)
+            .subscribe() { t ->
+                feeRateData.postValue(t)
             })
 
         compositeDisposable.add(feeRateKit.getRate("BCH")
             .subscribeOn(Schedulers.io())
-            .subscribe() {
-                    t -> feeRate.postValue(t)
+            .subscribe() { t ->
+                feeRateData.postValue(t)
             })
     }
 
