@@ -10,7 +10,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.disposables.CompositeDisposable
 
 
-class MainViewModel : ViewModel(), FeeRateKit.Listener {
+class MainViewModel : ViewModel(){
     val feeRateData = MutableLiveData<Any>()
     var compositeDisposable = CompositeDisposable()
 
@@ -21,8 +21,7 @@ class MainViewModel : ViewModel(), FeeRateKit.Listener {
             "",
             "https://btc.horizontalsystems.xyz/apg/"
         ),
-        App.instance,
-        this
+        App.instance
     )
 
     fun getStatusInfo() {
@@ -62,10 +61,4 @@ class MainViewModel : ViewModel(), FeeRateKit.Listener {
                 feeRateData.postValue(t)
             })
     }
-
-    override fun onRefresh(newRate: FeeRate) {
-        //this.rates.postValue(newRate)
-    }
-
-
 }
