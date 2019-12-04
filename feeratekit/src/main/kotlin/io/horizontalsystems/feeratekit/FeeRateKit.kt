@@ -11,13 +11,7 @@ import io.reactivex.functions.Function4
 
 class FeeRateKit(
     providerConfig: FeeProviderConfig,
-    private val context: Context,
-    var listener: Listener? = null
-) {
-
-    interface Listener {
-        fun onRefresh(rate: FeeRate)
-    }
+    private val context: Context) {
 
     private val providerManager: FeeRateProviderManager
 
@@ -48,10 +42,6 @@ class FeeRateKit(
         }
 
         throw IllegalArgumentException()
-    }
-
-    fun onUpdate(rate: FeeRate) {
-        listener?.onRefresh(rate)
     }
 
     @Suppress("UNCHECKED_CAST")
