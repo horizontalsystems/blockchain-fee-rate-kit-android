@@ -21,7 +21,7 @@ data class FeeRate(
 
 enum class Coin(
         val code: String,
-        val fallbackDataExpiration: Int) {
+        val cacheDataExpiration: Int) {
 
     BITCOIN("BTC", 5 * 60),
     BITCOIN_CASH("BCH", 0),
