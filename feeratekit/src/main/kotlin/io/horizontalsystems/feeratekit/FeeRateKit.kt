@@ -85,6 +85,7 @@ class FeeRateKit(
     }
 
     private fun getRate(coin: Coin): Single<FeeRate> {
-        return providerManager.getFeeRateProvider(coin).getFeeRates()
+        val xxx = providerManager.getFeeRateProvider(coin).getFeeRates()
+        return xxx
     }
 }

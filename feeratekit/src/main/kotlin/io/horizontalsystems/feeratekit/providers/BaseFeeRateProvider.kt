@@ -19,31 +19,35 @@ class BaseFeeRateProvider(
     override fun getFeeRates(): Single<FeeRate> {
 
         return feeRateProvider?.getFeeRates()
-                ?.doOnError { error ->
-                    provideFromFallback()
+                ?.onErrorReturn {
+                    provideFromCache()?.let {
+                        it
+                    }?:provideFromFallback()
                 }
                 ?.doOnSuccess {
-                    rate -> storeToFallback(rate)
+                    rate -> storeToCache(rate)
                 }
                 ?: Single.just(coin.defaultRate())
     }
 
-    private fun provideFromFallback(): FeeRate? {
+    private fun provideFromCache(): FeeRate? {
 
         return storage.getFeeRate(this.coin)?.let {
-            if ((Date().time / 1000) - it.date <= coin.fallbackDataExpiration)
+            if ((Date().time / 1000) - it.date <= coin.cacheDataExpiration)
                 it
             else
                 null
         }
-
     }
 
-    private fun storeToFallback(rate: FeeRate) {
+    private fun provideFromFallback(): FeeRate? {
+        return this.coin.defaultRate()
+    }
+
+    private fun storeToCache(rate: FeeRate) {
         executor.execute {
             storage.setFeeRate(rate)
         }
     }
-
 }
 
