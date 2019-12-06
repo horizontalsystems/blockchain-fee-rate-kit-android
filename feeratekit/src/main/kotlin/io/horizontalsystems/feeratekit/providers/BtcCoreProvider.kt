@@ -20,8 +20,8 @@ class BtcCoreProvider(private val providerConfig: FeeProviderConfig) : IFeeRateP
 
     private val logger = Logger.getLogger("BtcCoreProvider")
 
-    private val LOW_PRIORITY_BLOCKS = 10;
-    private val MEDIUM_PRIORITY_BLOCKS = 5;
+    private val LOW_PRIORITY_BLOCKS = 100;
+    private val MEDIUM_PRIORITY_BLOCKS = 10;
     private val HIGH_PRIORITY_BLOCKS = 1;
 
 
