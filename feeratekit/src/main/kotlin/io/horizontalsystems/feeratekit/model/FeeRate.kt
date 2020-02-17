@@ -102,7 +102,7 @@ class FeeProviderConfig(
         val infuraProjectId: String? = null,
         val infuraProjectSecret: String? = null,
         val infuraApiUrl: String? = null,
-        val btcCoreRpcUrl: String? = null,
-        val btcCoreRpcUSer: String? = null,
-        val btcCoreRpcPassword: String? = null) {
+        val btcLow: String? = null,
+        val btcAvg: String? = null,
+        val btcHigh: String? = null) {
 }

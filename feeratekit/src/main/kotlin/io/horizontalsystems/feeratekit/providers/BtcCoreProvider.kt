@@ -1,17 +1,25 @@
 package io.horizontalsystems.feeratekit.providers
 
-import android.util.Base64
 import android.util.Log
-import com.eclipsesource.json.JsonArray
-import com.eclipsesource.json.JsonObject
 import io.horizontalsystems.feeratekit.model.Coin
 import io.horizontalsystems.feeratekit.model.FeeProviderConfig
 import io.horizontalsystems.feeratekit.model.FeeRate
 import io.horizontalsystems.feeratekit.utils.HttpUtils
 import io.reactivex.Single
+import io.reactivex.functions.Function3
 import java.util.*
 import java.util.logging.Logger
-import io.reactivex.functions.Function3
+
+/* Smart Fee RPC Response
+         {
+            "error": null,
+            "id": "curltest",
+            "result": {
+                "blocks": 10,
+                "feerate": 0.00019212
+            }
+        }
+    */
 
 /**
  * Bitcoin-Core RPC Fee provider
@@ -24,54 +32,24 @@ class BtcCoreProvider(private val providerConfig: FeeProviderConfig) : IFeeRateP
     private val MEDIUM_PRIORITY_BLOCKS = 10;
     private val HIGH_PRIORITY_BLOCKS = 1;
 
-
-    /* Smart Fee RPC Response
-         {
-            "error": null,
-            "id": "curltest",
-            "result": {
-                "blocks": 10,
-                "feerate": 0.00019212
-            }
-        }
-    */
-
     private fun getEstimatedSmartFee(priorityInNumberOfBlocks: Int): Single<Float> {
         return Single.create { subscriber ->
             try {
-                val jsonArray = JsonArray()
-                var basicAuth: String? = null
-
-                jsonArray.add(priorityInNumberOfBlocks)
-
-                val requestData = JsonObject().apply {
-                    this["jsonrpc"] = "2.0"
-                    this["method"] = "estimatesmartfee"
-                    this["params"] = jsonArray
-                    this["id"] = 1
+                val url = when(priorityInNumberOfBlocks) {
+                    LOW_PRIORITY_BLOCKS -> providerConfig.btcLow
+                    MEDIUM_PRIORITY_BLOCKS -> providerConfig.btcAvg
+                    HIGH_PRIORITY_BLOCKS -> providerConfig.btcHigh
+                    else -> null
                 }
 
-                logger.info("Request feeRate for Bitcoin $requestData")
-
-
-                providerConfig.btcCoreRpcUSer?.let {
-                    val userCredentials = "${providerConfig.btcCoreRpcUSer}:${providerConfig.btcCoreRpcPassword}"
-                    basicAuth = "Basic " + String(Base64.encode(userCredentials.toByteArray(), Base64.DEFAULT))
-                }
-
-                providerConfig.btcCoreRpcUrl?.let {
-                    val response = HttpUtils.post(providerConfig.btcCoreRpcUrl, requestData.toString(), basicAuth)
+                url?.let {
+                    val response = HttpUtils.post(url, "", null)
                     val responseObject = response.asObject()
-                    var fee: Float
-
-                    if (responseObject["result"].asObject()["feerate"] != null)
-                        fee = responseObject["result"].asObject()["feerate"].asFloat()
-                    else
-                        fee = responseObject["result"].asObject()["fee"].asFloat()
+                    logger.info("Response feeRate for Bitcoin $response")
+                    val fee = responseObject["result"].asObject()["feerate"].asFloat()
 
                     subscriber.onSuccess(fee)
                 }
-
             } catch (e: Exception) {
                 Log.e("Bitcoin-Core", "exception", e)
                 subscriber.onError(e)
