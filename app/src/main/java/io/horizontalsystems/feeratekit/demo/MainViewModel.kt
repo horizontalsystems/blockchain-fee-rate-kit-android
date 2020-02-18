@@ -18,10 +18,7 @@ class MainViewModel : ViewModel(){
         FeeProviderConfig(
             "2a1306f1d12f4c109a4d4fb9be46b02e",
             "fc479a9290b64a84a15fa6544a130218",
-            "",
-            "http://134.209.138.9/fee_low",
-            "http://134.209.138.9/fee_avg",
-            "http://134.209.138.9/fee_high"
+            ""
         ),
         App.instance
     )
@@ -34,7 +31,7 @@ class MainViewModel : ViewModel(){
                     mutableMapOf(Pair("No data:", ""))
                 }
                     .subscribeOn(Schedulers.io())
-                    .subscribe() { t ->
+                    .subscribe { t ->
                         feeRateData.postValue(t)
                     })
         }

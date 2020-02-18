@@ -19,7 +19,7 @@ class FeeRateProviderManager(
         val feeRateProvider: IFeeRateProvider
 
         if (coin == Coin.BITCOIN)
-            feeRateProvider = BaseFeeRateProvider(coin, BtcCoreProvider(config), storage)
+            feeRateProvider = BaseFeeRateProvider(coin, BtcHorsysProvider(), storage)
         else if (coin == Coin.ETHEREUM)
             feeRateProvider = BaseFeeRateProvider(coin, InfuraProvider(config), storage)
         else
