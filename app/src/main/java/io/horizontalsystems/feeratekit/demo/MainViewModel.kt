@@ -19,8 +19,7 @@ class MainViewModel : ViewModel(){
             "2a1306f1d12f4c109a4d4fb9be46b02e",
             "fc479a9290b64a84a15fa6544a130218",
             ""
-        ),
-        App.instance
+        )
     )
 
     fun getStatusInfo() {

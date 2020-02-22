@@ -1,6 +1,5 @@
 package io.horizontalsystems.feeratekit
 
-import android.content.Context
 import io.horizontalsystems.feeratekit.model.Coin
 import io.horizontalsystems.feeratekit.model.FeeProviderConfig
 import io.horizontalsystems.feeratekit.model.FeeRate
@@ -9,15 +8,10 @@ import io.horizontalsystems.feeratekit.storage.InMemoryStorage
 import io.reactivex.Single
 import io.reactivex.functions.Function4
 
-class FeeRateKit(
-    providerConfig: FeeProviderConfig,
-    private val context: Context) {
+class FeeRateKit(providerConfig: FeeProviderConfig) {
 
-    private val providerManager: FeeRateProviderManager
-
-    init {
-        providerManager = FeeRateProviderManager(providerConfig, InMemoryStorage())
-    }
+    private val providerManager: FeeRateProviderManager =
+        FeeRateProviderManager(providerConfig, InMemoryStorage())
 
     fun bitcoin(): Single<FeeRate> {
         return getRate(Coin.BITCOIN)
@@ -85,7 +79,6 @@ class FeeRateKit(
     }
 
     private fun getRate(coin: Coin): Single<FeeRate> {
-        val xxx = providerManager.getFeeRateProvider(coin).getFeeRates()
-        return xxx
+        return providerManager.getFeeRateProvider(coin).getFeeRates()
     }
 }
