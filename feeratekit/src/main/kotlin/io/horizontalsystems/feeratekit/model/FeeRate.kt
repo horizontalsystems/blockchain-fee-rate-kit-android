@@ -24,13 +24,14 @@ enum class Coin(
         val cacheDataExpiration: Int) {
 
     BITCOIN("BTC", 5 * 60),
+    LITECOIN("LTC", 5 * 60),
     BITCOIN_CASH("BCH", 0),
     DASH("DASH", 0),
     ETHEREUM("ETH", 3 * 60);
 
     companion object {
         fun getCoinByCode(code: String): Coin? {
-            return values().find { coin -> coin.code.equals(code) }
+            return values().find { coin -> coin.code == code }
         }
     }
 
@@ -45,6 +46,16 @@ enum class Coin(
                     highPriority = 80,
                     highPriorityDuration = 30 * 60,
                     date = Date().time / 1000
+            )
+            LITECOIN -> FeeRate(
+                coin = this,
+                lowPriority = 1,
+                lowPriorityDuration = 30 * 60,
+                mediumPriority = 2,
+                mediumPriorityDuration = 15 * 60,
+                highPriority = 4,
+                highPriorityDuration = 3 * 60,
+                date = Date().time / 1000
             )
             BITCOIN_CASH -> FeeRate(
                     coin = this,
@@ -82,6 +93,7 @@ enum class Coin(
     fun maxRate(): Long {
         return when (this) {
             BITCOIN -> 5_000
+            LITECOIN -> 5_000
             BITCOIN_CASH -> 500
             DASH -> 500
             ETHEREUM -> 3_000_000_000_000
@@ -91,6 +103,7 @@ enum class Coin(
     fun minRate(): Long {
         return when (this) {
             BITCOIN -> 1
+            LITECOIN -> 1
             BITCOIN_CASH -> 1
             DASH -> 1
             ETHEREUM -> 100_000_000

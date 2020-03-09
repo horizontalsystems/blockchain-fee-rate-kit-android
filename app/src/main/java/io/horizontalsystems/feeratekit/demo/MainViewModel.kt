@@ -10,7 +10,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 
-class MainViewModel : ViewModel(){
+class MainViewModel : ViewModel() {
     val feeRateData = MutableLiveData<Any>()
     var compositeDisposable = CompositeDisposable()
 
@@ -44,6 +44,12 @@ class MainViewModel : ViewModel(){
             }
             .subscribeOn(Schedulers.io())
             .subscribe() { t ->
+                feeRateData.postValue(t)
+            })
+
+        compositeDisposable.add(feeRateKit.getRate("LTC")
+            .subscribeOn(Schedulers.io())
+            .subscribe { t ->
                 feeRateData.postValue(t)
             })
 
