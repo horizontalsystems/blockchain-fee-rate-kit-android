@@ -6,7 +6,7 @@ import io.horizontalsystems.feeratekit.model.FeeRate
 import io.horizontalsystems.feeratekit.providers.FeeRateProviderManager
 import io.horizontalsystems.feeratekit.storage.InMemoryStorage
 import io.reactivex.Single
-import io.reactivex.functions.Function4
+import io.reactivex.functions.Function5
 
 class FeeRateKit(providerConfig: FeeProviderConfig) {
 
@@ -15,6 +15,10 @@ class FeeRateKit(providerConfig: FeeProviderConfig) {
 
     fun bitcoin(): Single<FeeRate> {
         return getRate(Coin.BITCOIN)
+    }
+
+    fun litecoin(): Single<FeeRate> {
+        return getRate(Coin.LITECOIN)
     }
 
     fun bitcoinCash(): Single<FeeRate> {
@@ -50,11 +54,12 @@ class FeeRateKit(providerConfig: FeeProviderConfig) {
 
         return Single.zip(
             getStatusData(Coin.BITCOIN),
+            getStatusData(Coin.LITECOIN),
             getStatusData(Coin.ETHEREUM),
             getStatusData(Coin.BITCOIN_CASH),
             getStatusData(Coin.DASH),
-            Function4<Any, Any, Any, Any, Array<Any>> { btcRate, ethRate, bchRate, dashRate ->
-                arrayOf(btcRate, ethRate, bchRate, dashRate)
+            Function5<Any, Any, Any, Any, Any, Array<Any>> { btcRate, ltcRate, ethRate, bchRate, dashRate ->
+                arrayOf(btcRate, ltcRate, ethRate, bchRate, dashRate)
             })
             .map { rates ->
 
@@ -72,7 +77,7 @@ class FeeRateKit(providerConfig: FeeProviderConfig) {
                                 )
                             )
                         }
-                    } else statusInfo.plusAssign((rate as Pair<String,String>))
+                    } else statusInfo.plusAssign((rate as Pair<String, String>))
                 }
                 statusInfo
             }
