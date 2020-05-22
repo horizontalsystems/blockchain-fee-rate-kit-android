@@ -40,7 +40,7 @@ enum class Coin(
             BITCOIN -> FeeRate(
                     coin = this,
                     lowPriority = 20,
-                    lowPriorityDuration = 1440 * 60,
+                    lowPriorityDuration = 600 * 60, // 10 hours
                     mediumPriority = 40,
                     mediumPriorityDuration = 120 * 60,
                     highPriority = 80,
