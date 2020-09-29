@@ -25,7 +25,7 @@ import java.util.logging.Logger
 class HorsysProvider(private val coin: Coin) : IFeeRateProvider {
 
     private val logger = Logger.getLogger("HorsysProvider")
-    private val baseUrl = "http://134.209.138.9/${coin.code.toLowerCase(Locale.ENGLISH)}"
+    private val baseUrl = "https://${coin.code.toLowerCase(Locale.ENGLISH)}.horizontalsystems.xyz"
 
     private val LOW_PRIORITY_BLOCKS = 100
     private val MEDIUM_PRIORITY_BLOCKS = 10
@@ -35,9 +35,9 @@ class HorsysProvider(private val coin: Coin) : IFeeRateProvider {
         return Single.create { subscriber ->
             try {
                 val apiMethod = when (priorityInNumberOfBlocks) {
-                    LOW_PRIORITY_BLOCKS -> "fee_low"
-                    MEDIUM_PRIORITY_BLOCKS -> "fee_avg"
-                    HIGH_PRIORITY_BLOCKS -> "fee_high"
+                    LOW_PRIORITY_BLOCKS -> "services/fee/low"
+                    MEDIUM_PRIORITY_BLOCKS -> "services/fee/avg"
+                    HIGH_PRIORITY_BLOCKS -> "services/fee/high"
                     else -> null
                 }
 
