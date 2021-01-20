@@ -4,20 +4,17 @@ import android.util.Base64
 import android.util.Log
 import com.eclipsesource.json.JsonArray
 import com.eclipsesource.json.JsonObject
-import io.horizontalsystems.feeratekit.model.Coin
 import io.horizontalsystems.feeratekit.model.FeeProviderConfig
-import io.horizontalsystems.feeratekit.model.FeeRate
 import io.horizontalsystems.feeratekit.utils.HttpUtils
 import io.reactivex.Single
 import java.math.BigInteger
-import java.util.*
 import java.util.logging.Logger
 
-class InfuraProvider(private val providerConfig: FeeProviderConfig) : IFeeRateProvider {
+class InfuraProvider(private val providerConfig: FeeProviderConfig) {
 
     private val logger = Logger.getLogger("InfuraProvider")
 
-    private fun getGasPrice(): Single<BigInteger> {
+    fun getFeeRate(): Single<BigInteger> {
         return Single.create { subscriber ->
             try {
 
@@ -56,29 +53,4 @@ class InfuraProvider(private val providerConfig: FeeProviderConfig) : IFeeRatePr
         }
     }
 
-    override fun getFeeRates(): Single<FeeRate> {
-
-        return getGasPrice()
-                .flatMap { mediumBigInt ->
-                    val medium = mediumBigInt.toLong()
-                    val low: Long = medium / 2.toLong()
-                    val high: Long = medium * 2
-
-                    val coin = Coin.ETHEREUM
-                    val defaultRate = coin.defaultRate()
-
-                    return@flatMap Single.just(
-                            FeeRate(
-                                    coin = coin,
-                                    lowPriority = low,
-                                    lowPriorityDuration = defaultRate.lowPriorityDuration,
-                                    mediumPriority = medium,
-                                    mediumPriorityDuration = defaultRate.mediumPriorityDuration,
-                                    highPriority = high,
-                                    highPriorityDuration = defaultRate.highPriorityDuration,
-                                    date = Date().time / 1000
-                            )
-                    )
-                }
-    }
 }
