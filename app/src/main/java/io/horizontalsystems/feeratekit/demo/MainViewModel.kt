@@ -14,15 +14,16 @@ import io.reactivex.functions.Function;
 
 class MainViewModel : ViewModel() {
     val feeRateData = MutableLiveData<String>()
-    var compositeDisposable = CompositeDisposable()
+    private val compositeDisposable = CompositeDisposable()
 
-    private val sampleCoins = listOf("BTC", "LTC", "BCH", "DASH", "ETH")
+    private val sampleBlockchains = listOf( "BTC", "LTC", "BCH", "DASH", "ETH", "BSC")
 
-    val feeRateKit: FeeRateKit = FeeRateKit(
+    private val feeRateKit: FeeRateKit = FeeRateKit(
         FeeProviderConfig(
             btcCoreRpcUrl = "https://btc.horizontalsystems.xyz/rpc",
-            infuraProjectId = "2a1306f1d12f4c109a4d4fb9be46b02e",
-            infuraProjectSecret = "fc479a9290b64a84a15fa6544a130218"
+            ethEvmUrl = FeeProviderConfig.infuraUrl("2a1306f1d12f4c109a4d4fb9be46b02e"),
+            ethEvmAuth = "fc479a9290b64a84a15fa6544a130218",
+            bscEvmUrl = FeeProviderConfig.defaultBscEvmUrl()
         )
     )
 
@@ -32,7 +33,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun refresh() {
-        val requests = sampleCoins.map { getRate(it) }
+        val requests = sampleBlockchains.map { getRate(it) }
         val listMerger = Function<Array<Any>, List<BigInteger>> { args ->
             args.map { it as BigInteger }
         }
@@ -42,7 +43,7 @@ class MainViewModel : ViewModel() {
                 .subscribeOn(Schedulers.io())
                 .subscribe({ list ->
                     val allFees = list.mapIndexed { index, fee ->
-                        "${sampleCoins[index]} fee: $fee \n"
+                        "${sampleBlockchains[index]} fee: $fee \n"
                     }.joinToString(" ")
                     feeRateData.postValue(allFees)
                 }, {
@@ -52,13 +53,14 @@ class MainViewModel : ViewModel() {
 
     }
 
-    private fun getRate(coin: String): Single<BigInteger> {
-        return when (coin) {
+    private fun getRate(blockchain: String): Single<BigInteger> {
+        return when (blockchain) {
             "BTC" -> feeRateKit.bitcoin(8)
             "LTC" -> feeRateKit.litecoin()
             "BCH" -> feeRateKit.bitcoinCash()
             "DASH" -> feeRateKit.dash()
             "ETH" -> feeRateKit.ethereum()
+            "BSC" -> feeRateKit.binanceSmartChain()
             else -> Single.just(BigInteger.ZERO)
         }
     }

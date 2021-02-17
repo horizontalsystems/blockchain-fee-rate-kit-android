@@ -21,6 +21,7 @@ class HttpUtils {
             basicAuth?.let {
                 urlConnection.setRequestProperty("Authorization", it)
             }
+            urlConnection.setRequestProperty("Content-Type", "application/json")
             urlConnection.requestMethod = "POST"
             urlConnection.doOutput = true
             urlConnection.connectTimeout = CONNECTION_TIMEOUT
