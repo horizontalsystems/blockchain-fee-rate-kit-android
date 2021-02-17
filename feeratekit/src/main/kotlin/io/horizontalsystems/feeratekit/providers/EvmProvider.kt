@@ -4,24 +4,18 @@ import android.util.Base64
 import android.util.Log
 import com.eclipsesource.json.JsonArray
 import com.eclipsesource.json.JsonObject
-import io.horizontalsystems.feeratekit.model.FeeProviderConfig
 import io.horizontalsystems.feeratekit.utils.HttpUtils
 import io.reactivex.Single
 import java.math.BigInteger
 import java.util.logging.Logger
 
-class InfuraProvider(private val providerConfig: FeeProviderConfig) {
+class EvmProvider(private val url: String, private val auth: String? = null) {
 
-    private val logger = Logger.getLogger("InfuraProvider")
+    private val logger = Logger.getLogger("EvmProvider")
 
     fun getFeeRate(): Single<BigInteger> {
         return Single.create { subscriber ->
             try {
-
-                var infuraUrl: String = "https://mainnet.infura.io/v3/"
-
-                if (!providerConfig.infuraApiUrl.isNullOrEmpty())
-                    infuraUrl = providerConfig.infuraApiUrl
 
                 val requestData = JsonObject().apply {
                     this["jsonrpc"] = "2.0"
@@ -30,15 +24,14 @@ class InfuraProvider(private val providerConfig: FeeProviderConfig) {
                     this["id"] = 1
                 }
 
-                val url = "${infuraUrl}${providerConfig.infuraProjectId}"
-
-                val userCredentials = ":${providerConfig.infuraProjectSecret}"
-                val basicAuth = "Basic " + String(Base64.encode(userCredentials.toByteArray(), Base64.DEFAULT))
+                val basicAuth = auth?.let { credentials ->
+                    "Basic " + String(Base64.encode(":$credentials".toByteArray(), Base64.DEFAULT))
+                }
 
                 val response = HttpUtils.post(url, requestData.toString(), basicAuth)
                 val responseObject = response.asObject()
 
-                logger.info("Received gasPrice fromInfura $responseObject")
+                logger.info("Received gasPrice from Evm $responseObject")
 
                 val gasPriceInHex = responseObject["result"].asString().replace("0x", "")
 
@@ -47,7 +40,7 @@ class InfuraProvider(private val providerConfig: FeeProviderConfig) {
                 subscriber.onSuccess(gasPrice)
 
             } catch (e: Exception) {
-                Log.e("Infura", "exception", e)
+                Log.e("EvmProvider", "exception", e)
                 subscriber.onError(e)
             }
         }
