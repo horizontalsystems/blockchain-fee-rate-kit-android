@@ -38,7 +38,6 @@ class BtcCoreProvider(private val providerConfig: FeeProviderConfig) {
                 val btcCoreRpcUrl = providerConfig.btcCoreRpcUrl ?: throw Exception("Rpc Url is not provided")
 
                 val jsonArray = JsonArray()
-                var basicAuth: String? = null
 
                 jsonArray.add(priorityInNumberOfBlocks)
 
@@ -51,12 +50,7 @@ class BtcCoreProvider(private val providerConfig: FeeProviderConfig) {
 
                 logger.info("Request feeRate for Bitcoin $requestData")
 
-                providerConfig.btcCoreRpcUser?.let {
-                    val userCredentials = "${providerConfig.btcCoreRpcUser}:${providerConfig.btcCoreRpcPassword}"
-                    basicAuth = "Basic " + String(Base64.encode(userCredentials.toByteArray(), Base64.DEFAULT))
-                }
-
-                val response = HttpUtils.post(btcCoreRpcUrl, requestData.toString(), basicAuth)
+                val response = HttpUtils.post(btcCoreRpcUrl, requestData.toString(), providerConfig.btcCoreRpcUser, providerConfig.btcCoreRpcPassword)
                 val responseObject = response.asObject()
 
                 val fee = if (responseObject["result"].asObject()["feerate"] != null)
