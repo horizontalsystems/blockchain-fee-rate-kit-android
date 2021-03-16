@@ -40,6 +40,8 @@ dependencies {
     //  JSON
     implementation 'com.eclipsesource.minimal-json:minimal-json:0.9.5'
 
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+
     //  Test helpers
     testImplementation 'org.junit.jupiter:junit-jupiter:5.4.1'
  

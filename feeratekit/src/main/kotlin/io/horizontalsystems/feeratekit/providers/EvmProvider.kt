@@ -24,11 +24,8 @@ class EvmProvider(private val url: String, private val auth: String? = null) {
                     this["id"] = 1
                 }
 
-                val basicAuth = auth?.let { credentials ->
-                    "Basic " + String(Base64.encode(":$credentials".toByteArray(), Base64.DEFAULT))
-                }
-
-                val response = HttpUtils.post(url, requestData.toString(), basicAuth)
+                val username = auth?.let { "" }
+                val response = HttpUtils.post(url, requestData.toString(), username, auth)
                 val responseObject = response.asObject()
 
                 logger.info("Received gasPrice from Evm $responseObject")
