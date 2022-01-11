@@ -1,5 +1,6 @@
 package io.horizontalsystems.feeratekit.utils
 
+import android.util.Log
 import com.eclipsesource.json.Json
 import com.eclipsesource.json.JsonValue
 import okhttp3.Credentials
@@ -29,7 +30,9 @@ class HttpUtils {
                 .post(data.toRequestBody("application/json".toMediaType()))
                 .build()
 
-            return Json.parse(httpClient.newCall(request).execute().body!!.charStream())
+            val responseString = httpClient.newCall(request).execute().body!!.string()
+            Log.e("AAA", "resource: $resource\ndata:$data\nresponse:$responseString")
+            return Json.parse(responseString)
         }
     }
 }

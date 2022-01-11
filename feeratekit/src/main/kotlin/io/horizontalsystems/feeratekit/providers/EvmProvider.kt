@@ -1,6 +1,5 @@
 package io.horizontalsystems.feeratekit.providers
 
-import android.util.Base64
 import android.util.Log
 import com.eclipsesource.json.JsonArray
 import com.eclipsesource.json.JsonObject

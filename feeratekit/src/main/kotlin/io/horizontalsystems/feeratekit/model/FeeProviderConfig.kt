@@ -9,7 +9,7 @@ class FeeProviderConfig(
     val btcCoreRpcPassword: String? = null){
 
     companion object{
-        fun defaultBscEvmUrl(): String = "https://bsc-dataseed.binance.org/v3"
+        fun defaultBscEvmUrl(): String = "https://bsc-dataseed.binance.org"
 
         fun infuraUrl(projectId: String): String {
             return "https://mainnet.infura.io/v3/$projectId"
