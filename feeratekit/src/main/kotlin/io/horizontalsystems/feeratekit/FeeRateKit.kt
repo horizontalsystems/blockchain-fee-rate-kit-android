@@ -25,7 +25,7 @@ class FeeRateKit(providerConfig: FeeProviderConfig) {
     }
 
     fun dash(): Single<BigInteger> {
-        return Single.just(BigInteger("4"))
+        return Single.just(BigInteger("1"))
     }
 
     fun ethereum(): Single<BigInteger> {
