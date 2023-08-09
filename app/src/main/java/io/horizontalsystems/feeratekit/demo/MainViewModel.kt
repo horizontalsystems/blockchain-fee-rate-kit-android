@@ -20,10 +20,10 @@ class MainViewModel : ViewModel() {
 
     private val feeRateKit: FeeRateKit = FeeRateKit(
         FeeProviderConfig(
-            btcCoreRpcUrl = "https://btc.horizontalsystems.xyz/rpc",
             ethEvmUrl = FeeProviderConfig.infuraUrl("2a1306f1d12f4c109a4d4fb9be46b02e"),
             ethEvmAuth = "fc479a9290b64a84a15fa6544a130218",
-            bscEvmUrl = FeeProviderConfig.defaultBscEvmUrl()
+            bscEvmUrl = FeeProviderConfig.defaultBscEvmUrl(),
+            mempoolSpaceUrl = "https://mempool.space"
         )
     )
 
@@ -55,7 +55,7 @@ class MainViewModel : ViewModel() {
 
     private fun getRate(blockchain: String): Single<BigInteger> {
         return when (blockchain) {
-            "BTC" -> feeRateKit.bitcoin(8)
+            "BTC" -> feeRateKit.bitcoin().map { it.economyFee.toBigInteger() }
             "LTC" -> feeRateKit.litecoin()
             "BCH" -> feeRateKit.bitcoinCash()
             "DASH" -> feeRateKit.dash()
