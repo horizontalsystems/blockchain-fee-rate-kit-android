@@ -5,6 +5,7 @@ data class FeeProviderConfig(
     val ethEvmAuth: String? = null,
     val bscEvmUrl: String,
     val mempoolSpaceUrl: String,
+    val blockCypherUrl: String,
 ){
 
     companion object{
