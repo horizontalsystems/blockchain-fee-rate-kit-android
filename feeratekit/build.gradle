@@ -1,12 +1,14 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: "kotlin-kapt"
+apply plugin: 'maven-publish'
 
 android {
-    compileSdkVersion 28
+    namespace 'io.horizontalsystems.feeratekit'
+    compileSdkVersion 33
     defaultConfig {
-        minSdkVersion 23
-        targetSdkVersion 28
+        minSdkVersion 26
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
 
@@ -26,7 +28,6 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
-    buildToolsVersion '28.0.3'
 }
 
 dependencies {
@@ -51,4 +52,17 @@ dependencies {
 
 repositories {
     mavenCentral()
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.horizontalsystems'
+                artifactId = 'feeratekit'
+                version = '1.0.0'
+            }
+        }
+    }
 }
