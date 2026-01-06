@@ -1,6 +1,5 @@
 package io.horizontalsystems.feeratekit.providers
 
-import android.util.Base64
 import android.util.Log
 import com.eclipsesource.json.JsonArray
 import com.eclipsesource.json.JsonObject
@@ -9,7 +8,7 @@ import io.reactivex.Single
 import java.math.BigInteger
 import java.util.logging.Logger
 
-class EvmProvider(private val url: String, private val auth: String? = null) {
+class EvmProvider(private val url: String, private val torEnabled: Boolean, private val auth: String? = null) {
 
     private val logger = Logger.getLogger("EvmProvider")
 
@@ -25,7 +24,13 @@ class EvmProvider(private val url: String, private val auth: String? = null) {
                 }
 
                 val username = auth?.let { "" }
-                val response = HttpUtils.post(url, requestData.toString(), username, auth)
+                val response = HttpUtils.post(
+                    resource = url,
+                    data = requestData.toString(),
+                    username = username,
+                    pswd = auth,
+                    torEnabled = torEnabled
+                )
                 val responseObject = response.asObject()
 
                 logger.info("Received gasPrice from Evm $responseObject")

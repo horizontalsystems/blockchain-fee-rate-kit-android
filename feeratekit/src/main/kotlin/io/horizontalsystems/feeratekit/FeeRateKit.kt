@@ -9,10 +9,10 @@ import java.math.BigInteger
 
 class FeeRateKit(providerConfig: FeeProviderConfig) {
 
-    private val mempoolSpaceProvider = MempoolSpaceProvider(providerConfig.mempoolSpaceUrl)
-    private val ethProvider = EvmProvider(providerConfig.ethEvmUrl, providerConfig.ethEvmAuth)
-    private val bscProvider = EvmProvider(providerConfig.bscEvmUrl)
-    private val dashHybridFeeProvider = DashHybridFeeProvider(providerConfig.blockCypherUrl)
+    private val mempoolSpaceProvider = MempoolSpaceProvider(providerConfig.mempoolSpaceUrl, providerConfig.torEnabled)
+    private val ethProvider = EvmProvider(providerConfig.ethEvmUrl, providerConfig.torEnabled, providerConfig.ethEvmAuth)
+    private val bscProvider = EvmProvider(providerConfig.bscEvmUrl, providerConfig.torEnabled)
+    private val dashHybridFeeProvider = DashHybridFeeProvider(providerConfig.blockCypherUrl, providerConfig.torEnabled)
 
     fun bitcoin(): Single<MempoolSpaceProvider.RecommendedFees> {
         return mempoolSpaceProvider.getFeeRate()

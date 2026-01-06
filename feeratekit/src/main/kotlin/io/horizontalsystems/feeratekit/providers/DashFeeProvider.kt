@@ -28,7 +28,7 @@ class DashStaticFeeProvider {
     }
 }
 
-class DashBlockCypherProvider(private val baseUrl: String, private val apiToken: String = "") {
+class DashBlockCypherProvider(private val baseUrl: String, private val torEnabled: Boolean, private val apiToken: String = "") {
     fun getFeeRate(): Single<RecommendedFees> {
         return Single.create<RecommendedFees> { subscriber ->
             try {
@@ -38,7 +38,7 @@ class DashBlockCypherProvider(private val baseUrl: String, private val apiToken:
                     "$baseUrl/v1/dash/main"
                 }
 
-                val response = HttpUtils.get(url)
+                val response = HttpUtils.get(url, torEnabled)
                 val responseObject = response.asObject()
 
                 // BlockCypher provides fee estimates in satoshis per KB (1000 bytes)
@@ -72,11 +72,12 @@ class DashBlockCypherProvider(private val baseUrl: String, private val apiToken:
 
 class DashHybridFeeProvider(
     blockCypherUrl: String,
+    torEnabled: Boolean,
     apiToken: String = "",
     private val enableFallback: Boolean = true,
     private val timeoutMs: Long = 10000 // 10 seconds timeout
 ) {
-    private val blockCypherProvider = DashBlockCypherProvider(blockCypherUrl, apiToken)
+    private val blockCypherProvider = DashBlockCypherProvider(blockCypherUrl, torEnabled, apiToken)
     private val staticProvider = DashStaticFeeProvider()
 
     fun getFeeRate(): Single<RecommendedFees> {
