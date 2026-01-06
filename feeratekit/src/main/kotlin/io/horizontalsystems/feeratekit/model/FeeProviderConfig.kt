@@ -6,6 +6,7 @@ data class FeeProviderConfig(
     val bscEvmUrl: String,
     val mempoolSpaceUrl: String,
     val blockCypherUrl: String,
+    val torEnabled: Boolean,
 ){
 
     companion object{

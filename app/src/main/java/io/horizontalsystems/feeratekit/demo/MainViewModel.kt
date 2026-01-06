@@ -24,7 +24,8 @@ class MainViewModel : ViewModel() {
             ethEvmAuth = "fc479a9290b64a84a15fa6544a130218",
             bscEvmUrl = FeeProviderConfig.defaultBscEvmUrl(),
             mempoolSpaceUrl = "https://mempool.space",
-            blockCypherUrl = "https://api.blockcypher.com"
+            blockCypherUrl = "https://api.blockcypher.com",
+            torEnabled = false,
         )
     )
 

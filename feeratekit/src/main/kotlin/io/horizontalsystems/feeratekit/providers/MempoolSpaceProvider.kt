@@ -3,11 +3,11 @@ package io.horizontalsystems.feeratekit.providers
 import io.horizontalsystems.feeratekit.utils.HttpUtils
 import io.reactivex.Single
 
-class MempoolSpaceProvider(private val mempoolSpaceUrl: String) {
+class MempoolSpaceProvider(private val mempoolSpaceUrl: String, private val torEnabled: Boolean) {
     fun getFeeRate(): Single<RecommendedFees> {
         return Single.create { subscriber ->
             try {
-                val response = HttpUtils.get("$mempoolSpaceUrl/api/v1/fees/recommended")
+                val response = HttpUtils.get("$mempoolSpaceUrl/api/v1/fees/recommended", torEnabled)
                 val responseObject = response.asObject()
                 val recommendedFees = RecommendedFees(
                     fastestFee = responseObject.get("fastestFee").asInt(),
