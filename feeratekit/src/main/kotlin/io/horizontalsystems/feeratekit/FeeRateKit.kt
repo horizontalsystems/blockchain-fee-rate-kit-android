@@ -4,7 +4,6 @@ import io.horizontalsystems.feeratekit.model.FeeProviderConfig
 import io.horizontalsystems.feeratekit.providers.DashHybridFeeProvider
 import io.horizontalsystems.feeratekit.providers.EvmProvider
 import io.horizontalsystems.feeratekit.providers.BitcoinFeeProvider
-import io.reactivex.Single
 import java.math.BigInteger
 
 class FeeRateKit(providerConfig: FeeProviderConfig) {
@@ -14,27 +13,27 @@ class FeeRateKit(providerConfig: FeeProviderConfig) {
     private val bscProvider = EvmProvider(providerConfig.bscEvmUrl, providerConfig.torEnabled)
     private val dashHybridFeeProvider = DashHybridFeeProvider(providerConfig.blockCypherUrl, providerConfig.torEnabled)
 
-    fun bitcoin(): Single<BitcoinFeeProvider.RecommendedFees> {
+    suspend fun bitcoin(): BitcoinFeeProvider.RecommendedFees {
         return bitcoinFeeProvider.getFeeRate()
     }
 
-    fun litecoin(): Single<BigInteger> {
-        return Single.just(BigInteger("3"))
+    suspend fun litecoin(): BigInteger {
+        return BigInteger("3")
     }
 
-    fun bitcoinCash(): Single<BigInteger> {
-        return Single.just(BigInteger("3"))
+    suspend fun bitcoinCash(): BigInteger {
+        return BigInteger("3")
     }
 
-    fun dash(): Single<BigInteger> {
-        return dashHybridFeeProvider.getFeeRate().map { it.fastestFee }
+    suspend fun dash(): BigInteger {
+        return dashHybridFeeProvider.getFeeRate().fastestFee
     }
 
-    fun ethereum(): Single<BigInteger> {
+    suspend fun ethereum(): BigInteger {
         return ethProvider.getFeeRate()
     }
 
-    fun binanceSmartChain(): Single<BigInteger> {
-       return bscProvider.getFeeRate()
+    suspend fun binanceSmartChain(): BigInteger {
+        return bscProvider.getFeeRate()
     }
 }
