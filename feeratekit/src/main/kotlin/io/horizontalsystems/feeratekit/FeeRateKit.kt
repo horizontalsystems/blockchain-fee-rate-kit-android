@@ -3,23 +3,23 @@ package io.horizontalsystems.feeratekit
 import io.horizontalsystems.feeratekit.model.FeeProviderConfig
 import io.horizontalsystems.feeratekit.providers.DashHybridFeeProvider
 import io.horizontalsystems.feeratekit.providers.EvmProvider
-import io.horizontalsystems.feeratekit.providers.MempoolSpaceProvider
+import io.horizontalsystems.feeratekit.providers.BitcoinFeeProvider
 import io.reactivex.Single
 import java.math.BigInteger
 
 class FeeRateKit(providerConfig: FeeProviderConfig) {
 
-    private val mempoolSpaceProvider = MempoolSpaceProvider(providerConfig.mempoolSpaceUrl, providerConfig.torEnabled)
+    private val bitcoinFeeProvider = BitcoinFeeProvider(providerConfig.mempoolSpaceUrl, providerConfig.torEnabled)
     private val ethProvider = EvmProvider(providerConfig.ethEvmUrl, providerConfig.torEnabled, providerConfig.ethEvmAuth)
     private val bscProvider = EvmProvider(providerConfig.bscEvmUrl, providerConfig.torEnabled)
     private val dashHybridFeeProvider = DashHybridFeeProvider(providerConfig.blockCypherUrl, providerConfig.torEnabled)
 
-    fun bitcoin(): Single<MempoolSpaceProvider.RecommendedFees> {
-        return mempoolSpaceProvider.getFeeRate()
+    fun bitcoin(): Single<BitcoinFeeProvider.RecommendedFees> {
+        return bitcoinFeeProvider.getFeeRate()
     }
 
     fun litecoin(): Single<BigInteger> {
-        return Single.just(BigInteger("1"))
+        return Single.just(BigInteger("3"))
     }
 
     fun bitcoinCash(): Single<BigInteger> {

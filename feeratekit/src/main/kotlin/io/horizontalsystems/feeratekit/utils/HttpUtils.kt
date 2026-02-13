@@ -1,6 +1,5 @@
 package io.horizontalsystems.feeratekit.utils
 
-import android.util.Log
 import com.eclipsesource.json.Json
 import com.eclipsesource.json.JsonValue
 import okhttp3.Credentials
@@ -14,8 +13,6 @@ class HttpUtils {
 
     companion object {
 
-        private const val TAG = "HttpUtils"
-        
         private val httpClient = OkHttpClient.Builder()
             .connectTimeout(5, TimeUnit.SECONDS)
             .readTimeout(5, TimeUnit.SECONDS)
@@ -34,103 +31,37 @@ class HttpUtils {
             pswd: String?,
             torEnabled: Boolean = false
         ): JsonValue {
-            val maxRetries = if (torEnabled) 3 else 1
+            val client = if (torEnabled) torHttpClient else httpClient
 
-            var lastException: Exception? = null
-
-            repeat(maxRetries) { attempt ->
-                try {
-                    val client = if (torEnabled) {
-                        // Increase timeout with each attempt: 20s, 60s, 100s
-                        val timeout = 20L + (attempt * 40L)
-                        torHttpClient.newBuilder()
-                            .connectTimeout(timeout, TimeUnit.SECONDS)
-                            .readTimeout(timeout, TimeUnit.SECONDS)
-                            .callTimeout(timeout + 30, TimeUnit.SECONDS)
-                            .build()
-                    } else {
-                        httpClient
-                    }
-
-                    val requestBuilder = Request.Builder()
-                    if (username != null && pswd != null) {
-                        requestBuilder.addHeader("Authorization", Credentials.basic(username, pswd))
-                    }
-
-                    val request = requestBuilder
-                        .url(resource)
-                        .post(data.toRequestBody("application/json".toMediaType()))
-                        .build()
-
-                    val response = client.newCall(request).execute()
-
-                    return Json.parse(response.body!!.charStream())
-                } catch (e: Exception) {
-                    lastException = e
-                    Log.e(TAG, "Attempt ${attempt + 1}/$maxRetries failed: ${e.javaClass.simpleName} - ${e.message}")
-
-                    if (attempt < maxRetries - 1 && torEnabled) {
-                        val sleepTime = 1000L * (attempt + 1)
-                        Log.e(TAG, "Retrying in ${sleepTime}ms...")
-                        Thread.sleep(sleepTime)
-                    }
-                }
+            val requestBuilder = Request.Builder()
+            if (username != null && pswd != null) {
+                requestBuilder.addHeader("Authorization", Credentials.basic(username, pswd))
             }
 
-            throw IllegalStateException(
-                "Failed to connect to $resource after $maxRetries attempts (Tor/proxy may be slow or unreachable)",
-                lastException
-            )
+            val request = requestBuilder
+                .url(resource)
+                .post(data.toRequestBody("application/json".toMediaType()))
+                .build()
+
+            val response = client.newCall(request).execute()
+
+            return Json.parse(response.body!!.charStream())
         }
 
         fun get(
             resource: String,
             torEnabled: Boolean = false
         ): JsonValue {
-            val maxRetries = if (torEnabled) 3 else 1
+            val client = if (torEnabled) torHttpClient else httpClient
 
-            var lastException: Exception? = null
+            val request = Request.Builder()
+                .url(resource)
+                .get()
+                .build()
 
-            repeat(maxRetries) { attempt ->
-                try {
-                    val client = if (torEnabled) {
-                        // Increase timeout with each attempt: 20s, 60s, 100s
-                        val timeout = 20L + (attempt * 40L)
-                        torHttpClient.newBuilder()
-                            .connectTimeout(timeout, TimeUnit.SECONDS)
-                            .readTimeout(timeout, TimeUnit.SECONDS)
-                            .callTimeout(timeout + 30, TimeUnit.SECONDS)
-                            .build()
-                    } else {
-                        httpClient
-                    }
+            val response = client.newCall(request).execute()
 
-                    val requestBuilder = Request.Builder()
-
-                    val request = requestBuilder
-                        .url(resource)
-                        .get()
-                        .build()
-
-                    val response = client.newCall(request).execute()
-
-                    return Json.parse(response.body!!.charStream())
-                } catch (e: Exception) {
-                    lastException = e
-                    Log.e(TAG, "Attempt ${attempt + 1}/$maxRetries failed: ${e.javaClass.simpleName} - ${e.message}")
-
-                    if (attempt < maxRetries - 1 && torEnabled) {
-                        val sleepTime = 1000L * (attempt + 1)
-                        Log.e(TAG, "Retrying in ${sleepTime}ms...")
-                        Thread.sleep(sleepTime)
-                    }
-                }
-            }
-
-            throw IllegalStateException(
-                "Failed to connect to $resource after $maxRetries attempts (Tor/proxy may be slow or unreachable)",
-                lastException
-            )
+            return Json.parse(response.body!!.charStream())
         }
     }
 }
